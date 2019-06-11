@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewBag.Title = "Quên mật khẩu";
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Đăng nhập - Tổng cục lâm nghiệp</title>
+    @Styles.Render("~/bundlescss/logincss")
+    <style>
+        .text-red {
+            color: red
+        }
+    </style>
+</head>
+<body>
+    <!-- WRAPPER -->
+    <div id="wrapper">
+        <div class="vertical-align-wrap">
+            <div class="vertical-align-middle">
+                <div class="auth-box" style="    background: #efffff;">
+                    <div class="content">
+                        <div class="header">
+                            <div class="logo text-center"><img src="~/Content/img/logo1_150x150.png" alt="Tổng cục lâm nghiệp"></div>
+                            <p class="lead" style="text-transform: uppercase;color: #21b24b;">Quên mật khẩu</p>
+                        </div>
+                        <form class="form-auth-small" action="/Login/ResetMatKhau" method="post">
+                            <div class="form-group">
+                                <label for="signin-email" class="control-label sr-only">Email</label>
+                                <input type="text" class="form-control" name="UserName" placeholder="Email">
+                            </div>
+                            <p class="text-red">@Html.ValidationMessage("")</p>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" style="background-color: #21b24b;">Gửi email</button>
+                            <div class="bottom">
+                                <span class="helper-text"><i class="fa fa-lock"></i> <a href="/Login">Đăng nhập</a></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END WRAPPER -->
+</body>
+</html>
+

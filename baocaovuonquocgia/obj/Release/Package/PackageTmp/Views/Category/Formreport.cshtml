@@ -1,0 +1,589 @@
+﻿
+@{
+    ViewBag.Title = "Formreport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model baocaovuonquocgia.Models.ControllerTab
+
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Danh sách mẫu báo cáo</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.Tab == 1)
+            {
+                @Html.Partial("~/Views/Category/Formreport/DanhSach.cshtml")
+            }
+            @if (Model.Tab == 2)
+            {
+                @Html.Partial("~/Views/Category/Formreport/Header.cshtml")
+            }
+            @if (Model.Tab == 3)
+            {
+                @Html.Partial("~/Views/Category/Formreport/ThanhPhan.cshtml", Model)
+            }
+        </div>
+    </div>
+</div>
+@Styles.Render("~/bundlescss/Tree")
+@Scripts.Render("~/bundles/Tree")
+@section scripts
+{
+    <script type="text/javascript">
+        var nodeActive;
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var Tab =@Model.Tab;
+            if (Tab == 1) {
+                document.getElementById('btn_TaiBaoCaoAll').addEventListener('click', function () {
+                    ExportTableReportEmpty();
+                })
+                $("#DanhSachSapXepBaoCao").sortable();
+                //x-chinhsua
+                if (document.querySelectorAll('#DanhSachSapXepBaoCao li').length > 0) {
+                    document.querySelectorAll('#DanhSachSapXepBaoCao li').forEach(function ($li) {
+                        $li.querySelector('.x-chinhsuatieudebang').addEventListener('click', function () {
+                            ChuyenTab('ChuyenTabHeader', this.closest('li').dataset.id)
+                        })
+                        if ($li.querySelector('.x-chinhsuathanhphan')) {
+                            $li.querySelector('.x-chinhsuathanhphan').addEventListener('click', function () {
+                                ChuyenTab('ChuyenTabThanhPhan', this.closest('li').dataset.id)
+                            })
+                        }
+                        $li.querySelector('.x-taibaocaomau').addEventListener('click', function () {
+                            var $this = this;
+                            ExportTableReportEmpty(parseInt($this.closest('li').dataset.id))
+                        })
+                    })
+                }
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    ChuyenTab('ChuyenTabDanhSach');
+                });
+                document.getElementById('btn_CapnhatSapXepBaoCao').addEventListener('click', function () {
+                    var dataSend = [];
+                    var istt = 1;
+                    document.querySelectorAll('#DanhSachSapXepBaoCao li').forEach(function ($li) {
+
+                        var sapxep = {
+                            id: $li.dataset.id,
+                            sapxep: istt
+                        }
+                        istt++;
+                        dataSend.push(sapxep)
+                    });
+                    JqueryPostData('/Category/CapNhatSapXepBaoCao', { listBaoCaos: dataSend }, function (res) {
+                        Alert(res.message, function () {
+                            ChuyenTab('ChuyenTabDanhSach');
+                        })
+                    })
+                })
+            }
+            if (Tab == 2) {
+                var IdBaoCao =@Model.IdChinhSua;
+                $('#treeThanhPhanHeader').fancytree({
+                    source: {
+                        url: "/Category/GetTreeBaoCao?IdBaoCao=" + IdBaoCao + '&isFirst=true&IdHeaderCha=0'
+                    },
+                    loadChildren: function (event, data) {
+                        if (nodeActive != null && nodeActive == data.node.key) {
+                            data.node.setActive();
+                        }
+                        data.node.visit(function (subNode) {
+                            subNode.setExpanded(true);
+                            //console.log(subNode.isExpanded())
+                        });
+                    },
+                    init: function (event, data, flag) {
+                        if (data.node == null) {
+                            data.tree.visit(function (node) {
+                                node.setExpanded(true);
+                            });
+                        }
+                    },
+                    selectMode: 1,
+                    activate: function (e, data) {
+
+                        clearForm(document.getElementById('form_ChiTietCongTacChiTiet'))
+                        var node = data.node;
+                        nodeActive = node.key;
+                        if (node.data.dataSource != null) {
+                            var source = node.data.dataSource;
+                            document.getElementById('txt_tenhienthi').value = source.headername;
+                            if (source.is_bold) {
+                                document.querySelector('input[name="cbRowBold"]').checked = true;
+                            }
+                            if (source.is_upper) {
+                                document.querySelector('input[name="cbUpper"]').checked = true;
+                            }
+                            if (source.status) {
+                                document.querySelector('input[name="cbStatus"]').checked = true;
+                            }
+                            if (source.is_valuebold) {
+                                document.querySelector('input[name="cbValueBold"]').checked = true;
+                            }
+                            if (source.is_valueupper) {
+                                document.querySelector('input[name="cbValueUpper"]').checked = true;
+                            }
+                            if (source.is_no) {
+                                document.querySelector('input[name="cbSTT"]').checked = true;
+                            }
+                            if (source.is_component) {
+                                document.querySelector('input[name="cbComponent"]').checked = true;
+                            }
+                            document.querySelector('input[name="textalign"][value="' + (source.valuetextalign) + '"]').checked = true;
+                            document.getElementById('txt_colspan').value = source.colspan;
+                            document.getElementById('txt_rowspan').value = source.rowspan;
+                            document.getElementById('hdHeaderId').value = source.id;
+                        }
+                    },
+                    lazyload: function (e, data) {
+                        var url = '/Category/GetTreeBaoCao';
+                        url += '?IdBaoCao=' + IdBaoCao + '&isFirst=false';
+                        if (!isNaN(parseInt(data.node.key))) {
+                            url += '&IdHeaderCha=' + data.node.key;
+                        }
+                        else {
+                            url += '&IdHeaderCha=0'
+                        }
+                        data.result = { url: url };
+                    }
+                }).bind("fancytreeactivate", function (e, data) {
+                    return true;
+                });
+                document.getElementById('btn_Capnhat').addEventListener('click', function () {
+                    var node = $("#treeThanhPhanHeader").fancytree("getActiveNode");
+                    if (node != null) {
+                        var rt = { bool: true }
+                        rt = ElementValidation(document.getElementById('txt_tenhienthi'), [{ name: 'rangelength', requirement: [1, 500] }]);
+                        if (rt.bool == true) {
+                            rt = ElementValidation(document.querySelector('input[name="txt_colspan"]'), [{ name: 'integer' }])
+                        }
+                        if (rt.bool == true) {
+                            rt = ElementValidation(document.querySelector('input[name="txt_rowspan"]'), [{ name: 'integer' }])
+                        }
+                        if (rt.bool == false) {
+                            Alert(rt.msg, function () { })
+                        }
+                        else {
+                            var datasend = {
+                                is_bold: document.querySelector('input[name="cbRowBold"]').checked,
+                                is_upper: document.querySelector('input[name="cbUpper"]').checked,
+                                is_valuebold: document.querySelector('input[name="cbValueBold"]').checked,
+                                is_valueupper: document.querySelector('input[name="cbValueUpper"]').checked,
+                                status: document.querySelector('input[name="cbStatus"]').checked,
+                                valuetextalign: document.querySelector('input[name="textalign"]:checked').value,
+                                colspan: document.querySelector('input[name="txt_colspan"]').value,
+                                rowspan: document.querySelector('input[name="txt_rowspan"]').value,
+                                headername: document.querySelector('input[name="txt_tenhienthi"]').value,
+                                is_no: document.querySelector('input[name="cbSTT"]').checked,
+                                is_component: document.querySelector('input[name="cbComponent"]').checked,
+                                id: document.querySelector('input#hdHeaderId').value,
+                                IdBaoCao: IdBaoCao
+                            }
+                            JqueryPostData('/Category/CapNhatHeader', { headeEdit: datasend }, function (res) {
+
+                                if (res.success) {
+                                    node.tree.reload().done(function () { });
+                                    clearForm(document.getElementById('form_ChiTietCongTacChiTiet'))
+                                }
+                                Alert(res.message, function () { })
+                            })
+                        }
+                    }
+
+                })
+
+                document.getElementById('btn_Them').addEventListener('click', function () {
+                    var node = $("#treeThanhPhanHeader").fancytree("getActiveNode");
+                    if (node != null) {
+                        var rt = { bool: true }
+                        rt = ElementValidation(document.getElementById('txt_tenhienthi_Them'), [{ name: 'rangelength', requirement: [1, 500] }]);
+                        if (rt.bool == true) {
+                            rt = ElementValidation(document.querySelector('input[name="txt_colspan_Them"]'), [{ name: 'integer' }])
+                        }
+                        if (rt.bool == true) {
+                            rt = ElementValidation(document.querySelector('input[name="txt_rowspan_Them"]'), [{ name: 'integer' }])
+                        }
+                        if (rt.bool == false) {
+                            Alert(rt.msg, function () { })
+                        }
+                        else {
+                            var datasend = {
+                                is_bold: document.querySelector('input[name="cbRowBold_Them"]').checked,
+                                is_upper: document.querySelector('input[name="cbUpper_Them"]').checked,
+                                is_valuebold: document.querySelector('input[name="cbValueBold_Them"]').checked,
+                                is_valueupper: document.querySelector('input[name="cbValueUpper_Them"]').checked,
+                                status: document.querySelector('input[name="cbStatus_Them"]').checked,
+                                valuetextalign: document.querySelector('input[name="textalign_Them"]:checked').value,
+                                colspan: document.querySelector('input[name="txt_colspan_Them"]').value,
+                                rowspan: document.querySelector('input[name="txt_rowspan_Them"]').value,
+                                is_no: document.querySelector('input[name="cbSTT_Them"]').checked,
+                                is_component: document.querySelector('input[name="cbComponent_Them"]').checked,
+                                headername: document.querySelector('input[name="txt_tenhienthi_Them"]').value,
+                                HeaderId: document.querySelector('input#hdHeaderId').value,
+                                IdBaoCao: IdBaoCao
+                            }
+                            JqueryPostData('/Category/ThemMoiHeader', { headeAdd: datasend }, function (res) {
+
+                                if (res.success) {
+                                    node.tree.reload().done(function () { });
+                                    clearForm(document.getElementById('form_ChiTietCongTacChiTiet'))
+                                    clearForm(document.getElementById('formThemMoiCongTacCon'))
+                                }
+                                Alert(res.message, function () { })
+                            })
+                        }
+                    }
+                    else {
+                        Alert('Chưa chọn dòng nào', function () { })
+                    }
+                })
+            }
+            if (Tab == 3) {
+                var IdBaoCao =@Model.IdChinhSua;
+                JqueryPostData('/Category/GetTableReportHorizontal', { IdBaoCao: IdBaoCao }, function (res) {
+
+                    if (res.length > 0) {
+                        var $table = document.querySelector('.ctm-table');
+                        var $thead = document.querySelector('.ctm-table').tHead;
+                        createRowByLevel(res, $thead, 1);
+
+                        if ($thead.rows.length > 0) {
+                            var $columns = setCoulumns($thead, 0, 1);
+                            var $rowadd = document.createElement('tr');
+                            for (var i = 0; i < $columns - 1; i++) {
+                                var $td = document.createElement('td');
+                                if (i == 0) {
+                                    $td.innerHTML = '<div class="add-row hint--right" aria-label="Thêm dòng mới"><i class="fa fa-plus" aria-hidden="true"></i></div>';
+                                    $td.querySelector('.add-row').addEventListener('click', function () {
+                                        addRow();
+                                    })
+                                }
+                                $rowadd.appendChild($td)
+                            }
+                            $table.querySelector('tbody').appendChild($rowadd);
+                        }
+                        JqueryPostData('/Category/GetTableComponentReport', { IdBaoCao: IdBaoCao }, function ($dataTableComponent) {
+                            $dataTableComponent.forEach(function ($dataItem) {
+                                addRowData($dataItem)
+                            });
+                        })
+                    }
+                })
+            }
+        });
+        
+        function addRowData($data) {
+            var $table = document.querySelector('.ctm-table');
+            var RowIndex = $table.querySelectorAll('tbody tr').length;
+            var tr = $table.rows[$table.rows.length - 1].cloneNode(true);
+            for (var i = 0; i < tr.cells.length; i++) {
+                var $cell = tr.cells[i];
+                if (i == 0) {
+                    $cell.innerHTML = null;
+                    var $removeRow = document.createElement('div');
+                    $removeRow.setAttribute('class', 'remove-row hint--right');
+                    $removeRow.setAttribute('aria-label', 'Xóa dòng');
+                    $removeRow.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
+                    $cell.appendChild($removeRow);
+                    //$cell.innerHTML = '<div class="edit-row hint--right" aria-label="Lưu lại"><i class="fa fa-floppy-o" aria-hidden="true"></i></div>';
+                    $removeRow.addEventListener('click', function () {
+                        var $this = this;
+                        JqueryPostData('/Category/XoaComponent', { IdBaoCao: @Model.IdChinhSua, RowId: RowIndex }, function (res) {
+                            if (res.success) {
+                                Alert(res.message, function () { })
+                                $this.closest('tr').remove();
+                            }
+                            else {
+                                Alert(res.message, function () { })
+                            }
+                        })
+                    })
+                }
+                else {
+                    var $header = $table.querySelector('th[data-columns="' + (i + 1) + '"]')
+
+                    var offsetWidth = $table.rows[$table.rows.length - 1].cells[i].offsetWidth;
+                    $cell.innerHTML = null;
+                    $cell.dataset.source = JSON.stringify($data);
+                    if ($header != null) {
+                        $cell.dataset.HeaderId = $header.dataset.idth;
+                        if ($header.dataset.edit == 'true') {
+                            $cell.dataset.edit = true;
+                            $cell.setAttribute('class', 'edit');
+                            $cell.addEventListener('dblclick', function () {
+                                this.querySelector('.display').style.display = 'none';
+                                this.querySelector('.editbox').style.display = 'inline';
+                                this.querySelector('textarea').focus();
+                            })
+                            var $editbox = document.createElement('div');
+                            $editbox.setAttribute('class', 'editbox');
+                            $editbox.setAttribute('style', 'display:none; width:' + (offsetWidth) + 'px')
+                            var $input = document.createElement('textarea');
+                            $input.onkeypress = function ($e) {
+                                if ($e.keyCode == 13) {
+                                    this.blur();
+                                }
+                                return true;
+                            }
+                            $input.rows = 1;
+                            $input.style.width = '100%';
+                            $input.addEventListener('blur', function () {
+                                var $this = this;
+                                var $displayED = $this.closest('td').querySelector('.display');
+                                var $editboxED = $this.closest('td').querySelector('.editbox');
+                                if (this.closest('td').dataset.HeaderId) {
+                                    var $souceP = JSON.parse(this.closest('td').dataset.source);
+                                    
+                                    var $dataCell = $souceP.headers.filter(function ($item) {
+                                        return ($this.closest('td').dataset.HeaderId == $item.Id);
+                                    });
+                                    if ($dataCell.length == 1) {
+                                        if ($dataCell[0].Title == $this.value) {
+                                            $this.value = ($dataCell[0].Title);
+                                            $displayED.style.display = 'inline';
+                                            $editboxED.style.display = 'none';
+                                        }
+                                        else {
+                                            SaveStepbyStepComponent($souceP, @Model.IdChinhSua, $this.closest('td').dataset.HeaderId, $this.value, function ($dataUpdate) {
+                                                if ($dataUpdate.success) {
+                                                    $displayED.innerHTML = $this.closest('td').querySelector('textarea').value;
+                                                    $displayED.style.display = 'inline';
+                                                    $editboxED.style.display = 'none';
+                                                    $this.closest('td').dataset.source = JSON.stringify($dataUpdate.extend);
+                                                }
+                                                else {
+                                                    $this.value = ($dataCell[0].Title);
+                                                    $displayED.style.display = 'inline';
+                                                    $editboxED.style.display = 'none';
+                                                }
+                                            })
+                                        }
+                                        
+                                    }
+                                    else {
+                                        console.log($dataCell[0])
+                                        $this.value = ($dataCell[0].Title);
+                                        $displayED.style.display = 'inline';
+                                        $editboxED.style.display = 'none';
+                                    }
+                                }
+                            })
+                            $editbox.appendChild($input);
+                            $cell.appendChild($editbox);
+                            var $display = document.createElement('div');
+                            $display.setAttribute('class', 'display');
+                            $display.style.display = 'inline';
+                            $display.style.width = offsetWidth + 'px';
+
+                            $cell.appendChild($display);
+                            $cell.style.width = offsetWidth + 'px';
+
+                        }
+                        else {
+
+                            $cell.dataset.edit = false;
+                            $cell.setAttribute('class', 'not-edit');
+                            $cell.addEventListener('dblclick', function () {
+                                this.querySelector('.display').style.display = 'none';
+                                this.querySelector('.editbox').style.display = 'inline';
+                            });
+
+                            var $divSelectbox = document.createElement('div');
+                            $divSelectbox.setAttribute('class', 'editbox');
+                            var $select = document.createElement('select');
+                            $select.setAttribute('style', 'width:' + (offsetWidth - 5) + 'px');
+                            $select.innerHTML = '<option value="1" selected>LOẠI I</option><option value="2">LOẠI II</option><option value="3">LOẠI III</option>';
+                            $divSelectbox.appendChild($select)
+                            $cell.appendChild($divSelectbox);
+                            var $display = document.createElement('div');
+                            $display.setAttribute('class', 'display');
+                            $display.style.display = 'inline';
+                            $display.style.width = offsetWidth + 'px';
+                            $cell.appendChild($display);
+                            $cell.style.width = offsetWidth + 'px';
+                            $select.addEventListener('change', function () {
+                                var $this = this;
+                                var $displayED = $this.closest('td').querySelector('.display');
+                                var $editboxED = $this.closest('td').querySelector('.editbox');
+                                if (this.closest('td').dataset.HeaderId) {
+                                    var $souceP = JSON.parse(this.closest('td').dataset.source);
+                                    var $dataCell = $souceP.headers.filter(function ($item) {
+                                        return ($this.closest('td').dataset.HeaderId == $item.Id);
+                                    });
+                                    if ($dataCell.length == 1) {
+                                        if ($dataCell[0].Title == $this.value) {
+                                            $this.querySelector('option[value="' + ($dataCell[0].TypeValue) + '"]').selected = true;
+                                            $displayED.style.display = 'inline';
+                                            $editboxED.style.display = 'none';
+                                        }
+                                        else {
+                                            SaveStepbyStepComponent($souceP, @Model.IdChinhSua, $this.closest('td').dataset.HeaderId, $this.options[$this.selectedIndex].value, function ($dataUpdate) {
+                                                if ($dataUpdate.success) {
+                                                    $displayED.innerHTML = $this.querySelector('option:checked').innerHTML;
+                                                    $displayED.style.display = 'inline';
+                                                    $editboxED.style.display = 'none';
+                                                    $this.closest('td').dataset.source = JSON.stringify($dataUpdate.extend);
+                                                }
+                                                else {
+                                                    $this.querySelector('option[value="' + ($dataCell[0].TypeValue) + '"]').selected = true;
+                                                    $displayED.style.display = 'inline';
+                                                    $editboxED.style.display = 'none';
+                                                }
+                                            })
+                                        }
+                                        
+                                    }
+                                    else {
+                                        $this.querySelector('option[value="' + ($dataCell[0].TypeValue) + '"]').selected = true;
+                                        $displayED.style.display = 'inline';
+                                        $editboxED.style.display = 'none';
+                                    }
+                                }
+
+
+                                //this.closest('td').querySelector('.display').innerHTML = this.options[this.selectedIndex].innerHTML;
+                                //this.closest('td').querySelector('.display').style.display = 'inline';
+                                //this.closest('td').querySelector('.editbox').style.display = 'none';
+                            })
+                        }
+
+                        var $dataComponent = $data.headers.filter(function ($item) {
+                            return ($header.dataset.idth == $item.Id);
+                        });
+                        if ($dataComponent.length==1) {
+                            if ($header.dataset.edit == 'true') {
+                                $cell.querySelector('textarea').innerHTML = $dataComponent[0].Title;
+                                $cell.querySelector('.display').innerHTML = $dataComponent[0].Title;
+                            }
+                            else {
+                                $cell.querySelector('select option[value="' + ($dataComponent[0].TypeValue) + '"]').selected = true;
+                                $cell.querySelector('.display').innerHTML = $cell.querySelector('select option[value="' + ($dataComponent[0].TypeValue) + '"]').innerHTML;
+                            }
+                            $cell.dataset.HeaderId = $dataComponent[0].Id;
+
+                            var stylecell = 'text-align:' + $dataComponent[0].TextAlign + ';';
+                            if ($dataComponent[0].TextBold) {
+                                stylecell += ' font-weight: bold;';
+                            }
+                            if ($dataComponent[0].TextUpper) {
+                                stylecell += ' text-transform: uppercase;';
+                            }
+                            $cell.querySelector('.display').setAttribute('style', stylecell)
+
+                        }
+                    }
+                }
+            }
+
+            tr.dataset.RowId = $data.RowId;
+            $table.rows[$table.rows.length - 1].parentNode.insertBefore(tr, $table.rows[$table.rows.length - 1]);
+            document.querySelector('.designTable').scrollTop = document.querySelector('.designTable').scrollHeight;
+        }
+        function addRow() {
+            var $table = document.querySelector('.ctm-table');
+            var tr = $table.rows[$table.rows.length - 1].cloneNode(true);
+            JqueryPostData('/Category/ThemMoiThanhPhan', { IdBaoCao: @Model.IdChinhSua, RowId: $table.querySelectorAll('tbody tr').length }, function (res) {
+                if (res.success) {
+                    addRowData(res.extend);
+                }
+                else {
+                    Alert(res.message, function () { })
+                }
+            })
+            
+        }
+
+        function SaveStepbyStepComponent($source, $IdBaoCao, $headerId, $dataText, $callback) {
+            var componentUpdate = {
+                RowId: $source.RowId,
+                HeaderId: $headerId,
+                Title: $dataText,
+                TypeValue: $dataText,
+                IdBaoCao: $IdBaoCao
+            }
+            JqueryPostData('/Category/CapNhatThanhPhanDataType', { componentUpdate: componentUpdate }, function (res) {
+                $callback(res);
+            })
+            
+        }
+
+        function setCoulumns($thead, $rowIndex, $columns,$idCha) {
+            var $row = $thead.rows[$rowIndex];
+            for (var i = 0; i < $row.cells.length; i++) {
+                var $cell = $row.cells[i];
+                if (($cell.dataset.header_id_cha == $idCha) || $rowIndex==0) {
+                    if ($cell.colSpan > 1) {
+                        if (!($thead.rows.length - 1 <= $rowIndex)) {
+                            setCoulumns($thead, ($rowIndex + 1), $columns, $cell.dataset.idth);
+                            $columns += $cell.colSpan;
+                        }
+                    }
+                    else {
+                        $cell.dataset.columns = $columns;
+                        $columns++;
+                    }
+                }
+                
+            }
+            return $columns;
+        }
+        function createRowByLevel($data, $thead, $level) {
+            var $current = $data.filter(function ($item) { return $item.level == $level });
+            if ($current.length > 0) {
+                var $tr = document.createElement('tr');
+                if ($level == 1) {
+                    $tr.innerHTML = '<th rowspan=' + (Math.max.apply(Math, $data.map(function (o) { return o.level; }))) + '></th>';
+                }
+                $current.forEach(function ($head) {
+                    var $th = document.createElement('th');
+                    $th.innerHTML = $head.title;
+                    $th.dataset.idth = $head.extend.id;
+                    $th.dataset.header_id_cha = $head.extend.header_id;
+                    $th.colSpan = $head.colspan;
+                    $th.rowSpan = $head.rowspan;
+                    if ($head.extend.is_no == true || $head.extend.is_component == true) {
+                        $th.dataset.edit = true;
+                    }
+                    $tr.appendChild($th);
+                });
+                $thead.appendChild($tr);
+                createRowByLevel($data, $thead, ($level + 1));
+            }
+        }
+        function ChuyenTab(nameForm, IdChinhSua) {
+            var $form = document.createElement('form');
+            var $inputTab = document.createElement('input');
+            $inputTab.type = 'hidden';
+            $inputTab.name = 'tab';
+            switch (nameForm) {
+                case 'ChuyenTabHeader':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 2;
+
+                    break;
+                case 'ChuyenTabDanhSach':
+                    $inputTab.value = 1;
+                    break;
+                case 'ChuyenTabThanhPhan':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 3;
+                    break;
+            }
+
+            $form.action = '/category/formreport';
+            $form.method = 'POST';
+            $form.appendChild($inputTab);
+            document.body.appendChild($form);
+            $form.submit();
+        }
+    </script>
+}

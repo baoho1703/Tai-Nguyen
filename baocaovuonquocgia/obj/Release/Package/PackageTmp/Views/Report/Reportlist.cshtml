@@ -1,0 +1,554 @@
+﻿@model baocaovuonquocgia.Models.ControllerTab
+@{
+    ViewBag.Title = "Reportlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Danh sách báo cáo</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.Tab == 1)
+            {
+                @Html.Partial("~/Views/Report/Reportlist/DanhSach.cshtml")
+            }
+            @if (Model.Tab == 2)
+            {
+                @Html.Partial("~/Views/Report/Reportlist/ChiTiet.cshtml", Model)
+            }
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var tableBaoCao;
+        var $dataBySelect;
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var Tab =@Model.Tab;
+            if (Tab == 1) {
+                tableBaoCao = $('#tableBaoCao').dataTable({
+                    ajax: '/Report/GetPreciousTableAll',
+                    processing: true,
+                    serverSide: true,
+                    width: 'auto',
+                    bSort: false,
+                    bDestroy: true,
+                    responsive: true,
+                    columns: [
+                        {
+                            data: 'id',
+                            class: 'text-center column-80',
+                        },
+                        {
+                            data: 'precious_name'
+                        },
+                        {
+                            data: 'startend'
+                        },
+                        {
+                            data: 'completedate'
+                        },
+                        {
+                            data: 'id',
+                            mRender: function (data, type, row) {
+                                var rt = '<a class="hint--top x-chinhsua" style="cursor: pointer;" aria-label="Hiện thị báo cáo"><i class="fa fa-eye"></i></a>';
+                                //if (row.isCreate == true) {
+                                //    rt = '<a class="hint--top x-chinhsua" style="cursor: pointer;" aria-label="Hiện thị báo cáo"><i class="fa fa-eye"></i></a>';
+                                //}
+
+                                return rt;
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0,
+                    }],
+                    "order": [[1, 'asc']],
+                    responsive: true,
+                    searching: true,
+                    bLengthChange: false,
+                    iDisplayLength: 10,
+                    drawCallback: function (oSettings) {
+
+                    },
+                    fnCreatedRow: function (row, data, index) {
+                        var page = this.api().page();
+                        var len = this.api().page.len();
+                        $('td', row).eq(0).html((page * len) + (index + 1));
+                        if ($('td', row).eq(4)[0].querySelector('.x-chinhsua')) {
+                            $('td', row).eq(4)[0].querySelector('.x-chinhsua').addEventListener('click', function () {
+                                ChuyenTab("ChuyenTabChiTiet", data.id);
+                            });
+                        }
+                    },
+                    language: {
+                        lengthMenu: "Lọc theo _MENU_",
+                        zeroRecords: "Không có dòng nào",
+                        info: "Tổng cộng _TOTAL_ dòng",
+                        emptyTable: "Không có dữ liệu nào trong bảng",
+                        infoEmpty: "Không có dòng nào",
+                        loadingRecords: "Tải dữ liệu...",
+                        processing: '<div class="nloading"></div>',
+                        search: "Tìm kiếm:",
+                        searchPlaceholder: "Tìm kiếm theo nội dung ...",
+                        paginate: {
+                            first: "Đầu",
+                            last: "Cuối",
+                            next: "Tiếp",
+                            previous: "Trước"
+                        }
+                    }
+                });
+            }
+            if (Tab == 2) {
+
+                var sl_unit = document.getElementById('sl_unit');
+                sl_unit.addEventListener('change', function () {
+                    if (this.selectedIndex == 0) {
+                        var $ulbaocao = document.getElementById('list-baocao');
+                        $ulbaocao.innerHTML = null;
+                        loadReport();
+                    }
+                    else {
+                        loadReport(this.options[this.selectedIndex].value)
+                    }
+                    
+                })
+                loadReport();
+                document.getElementById('btn_taibaocao').addEventListener('click', function () {
+                    if ($dataBySelect != undefined) {
+                        if (!(sl_unit.options[sl_unit.selectedIndex].value == 0)) {
+                            JqueryPostData('/Home/GetThongTinUnitByID', { IdUnit: sl_unit.options[sl_unit.selectedIndex].value}, function (res) {
+
+                                var $all = document.createElement('div');
+                                $all.innerHTML = res.Vesion.datatext;
+                                var $data = res;
+                                $data.tendiachi = $all.querySelector('tr > td > .display-pro .data-dynamic').innerHTML;
+                                $data.loaihang = $all.querySelector('table table tbody tr:nth-child(2) td:nth-child(2) .display-pro').innerHTML;
+                                $data.loaihangghichu = $all.querySelector('table table tbody tr:nth-child(2) td:nth-child(3) .display-pro').innerHTML;
+                                $data.vitrighichu = $all.querySelector('table table tbody tr:nth-child(3) td:nth-child(3) .display-pro').innerHTML;
+                                $data.ngaythanhlapghichu = $all.querySelector('table table tbody tr:nth-child(4) td:nth-child(3) .display-pro').innerHTML;
+                                $data.cacdonviql = $all.querySelector('table table tbody tr:nth-child(5) td:nth-child(2) .display-pro').innerHTML;
+                                $data.cacdonviqlghichu = $all.querySelector('table table tbody tr:nth-child(5) td:nth-child(3) .display-pro').innerHTML;
+                                $data.nhiemvuchinh1 = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(2) .display-pro').innerHTML;
+                                $data.nhiemvuchinh2 = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(3) .display-pro').innerHTML;
+                                $data.nhiemvuchinhghichu = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(4) .display-pro').innerHTML;
+                                $data.cacchuongtrinhlq = $all.querySelector('table table tbody tr:nth-child(10) td:nth-child(2) .display-pro').innerHTML;
+                                $data.cacchuongtrinhlqghichu = $all.querySelector('table table tbody tr:nth-child(10) td:nth-child(3) .display-pro').innerHTML;
+                                $data.dautukhac = $all.querySelector('table table tbody tr:nth-child(8) td:nth-child(4) .display-pro').innerHTML;
+                                $data.dientichghichu = $all.querySelector('table table tbody tr:nth-child(6) td:nth-child(4) .display-pro').innerHTML;
+                                $data.tongcanboghichu = $all.querySelector('table table tbody tr:nth-child(7) td:nth-child(4) .display-pro').innerHTML;
+                                if (res.ngaythanhlap == null) {
+                                    $data.ngaythanhlap = '';
+                                }
+                                ExportTableReportData((sl_unit.options[sl_unit.selectedIndex].value == 0), false, null, $dataBySelect, $data);
+                            })
+                        }
+                        else {
+                            ExportTableReportData((sl_unit.options[sl_unit.selectedIndex].value == 0), false, null, $dataBySelect);
+                        }
+                        
+                    }
+                })
+            }
+        });
+        function loadReport(UnitId) {
+            var $ulbaocao = document.getElementById('list-baocao');
+            $ulbaocao.innerHTML = null;
+            var IdDonvi = 0;
+            if (UnitId != undefined && UnitId != null) {
+                IdDonvi = UnitId
+            }
+            var IdPrecious=@Model.IdChinhSua;
+            JqueryPostData('/Report/GetDanhSachBaoCao', { IdPrecious: IdPrecious, IdDonVi: IdDonvi }, function (res) {
+                $dataBySelect = res;
+                if (res.length > 0) {
+                    res.forEach(function ($baocao) {
+                        var $liBaocao = document.createElement('li');
+                        var $divTitle = document.createElement('div');
+                        $divTitle.setAttribute('class', 'login-session');
+                        $divTitle.innerText = $baocao.TieuDe;
+                        var $btnShow = document.createElement('button');
+                        $btnShow.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnShow.setAttribute('aria-label', "Hiện thị biểu mẫu");
+                        $btnShow.innerHTML = '<i class="fa fa-eye"></i>';
+                        $btnShow.setAttribute('style', 'right: 50px;');
+                        $divTitle.appendChild($btnShow);
+
+                        var $btnDownExcel = document.createElement('button');
+                        $btnDownExcel.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnDownExcel.setAttribute('aria-label', "Tải dữ liệu Excel");
+                        $btnDownExcel.innerHTML = '<i class="fa fa-file-excel-o" aria-hidden="true"></i>';
+                        $btnDownExcel.setAttribute('style', 'right: 100px;');
+                        $divTitle.appendChild($btnDownExcel);
+
+                        var $btnDownPrint = document.createElement('button');
+                        $btnDownPrint.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnDownPrint.setAttribute('aria-label', "In dữ liệu");
+                        $btnDownPrint.innerHTML = '<i class="fa fa-print" aria-hidden="true"></i>';
+                        $btnDownPrint.setAttribute('style', 'right: 150px;');
+                        $divTitle.appendChild($btnDownPrint);
+
+                        $liBaocao.appendChild($divTitle);
+                        var $divboundtable = document.createElement('div');
+                        $divboundtable.setAttribute('class', 'ctm-table-bound');
+                        $divboundtable.setAttribute('style', 'display:none;width: 100%;');
+                        $divboundtable.appendChild(createTable($baocao, IdDonvi))
+                        $liBaocao.appendChild($divboundtable);
+                        $btnShow.addEventListener('click', function () {
+                            var $table = this.closest('li').querySelector('.ctm-table-bound');
+                            if ($table.style.display == 'none') {
+                                this.closest('.login-session').classList.add('view-log')
+                                $table.style.display = 'inline-block'
+                            }
+                            else {
+                                this.closest('.login-session').classList.remove('view-log')
+                                $table.style.display = 'none'
+                            }
+                        });
+                        $btnDownExcel.addEventListener('click', function () {
+                            ExportTableReportData((IdDonvi == 0), true, $baocao, null);
+                        });
+                        $btnDownPrint.addEventListener('click', function () {
+                            var printContents = $divboundtable.cloneNode(true);
+                            document.getElementById('wrapper').style.display = 'none';
+                            printContents.style.display = 'block';
+                            document.body.appendChild(printContents);
+                            window.print();
+                            document.getElementById('wrapper').style.display = 'block';
+                            printContents.remove();
+                        });
+                        $ulbaocao.appendChild($liBaocao)
+                    });
+                }
+            })
+        }
+
+        function createTable($data, $IdDonvi) {
+            var $table = document.createElement('table');
+            $table.setAttribute('class', 'ctm-table ctm-unit-view');
+            var $thead = document.createElement('thead');
+            var $DanhSachTieuDe = $data.DanhSachTieuDe;
+            if ($DanhSachTieuDe.length > 0) {
+                createHeaders($DanhSachTieuDe, 1, $thead)
+            }
+            $table.appendChild($thead);
+            var $tbody = document.createElement('tbody');
+            var $DanhSachDong = $data.DanhSachDong;
+            if ($DanhSachDong.length > 0) {
+                createTbody($DanhSachDong, $data, $tbody, $IdDonvi)
+            }
+            $table.appendChild($tbody);
+            return $table;
+        }
+        function createTbody($DanhSachDong, $dataTable, $tbody, $IdDonvi) {
+            $DanhSachDong.forEach(function ($dong) {
+                var $tr = document.createElement('tr');
+                var $DanhSachCot = $dong.DanhSachCot;
+                if ($DanhSachCot.length > 0) {
+                    $DanhSachCot.forEach(function ($cot) {
+                        var $td = document.createElement('td');
+                        if ($cot.TieuDeCot.IsNo == true || $cot.TieuDeCot.IsComponent == true) {
+                            $td.setAttribute('class', 'not-edit');
+                            $td.innerHTML = $cot.DuLieuText;
+                        }
+                        else {
+                            if ($dataTable.Loai == 0) {
+                                var $display = document.createElement('div');
+                                $display.setAttribute('class', 'display');
+                                if ($cot.TypeValue == 1) {
+                                    if ($IdDonvi == 0) {
+                                        var $DuLieuTextTong = $cot.DuLieuTextTong;
+                                        if ($DuLieuTextTong != null && $DuLieuTextTong.length > 0) {
+                                            $DuLieuTextTong.forEach(function ($UnitReport) {
+                                                var $p = document.createElement('p');
+                                                $p.innerHTML = '- ' + $UnitReport.UnitName + ': ' + $UnitReport.Data;
+                                                $display.appendChild($p)
+                                            });
+                                        }
+                                    }
+                                    else {
+                                        $display.innerHTML = $cot.DuLieuText;
+                                    }
+                                }
+                                else {
+                                    $display.innerHTML = $cot.TongNumber;
+                                }
+                                $td.appendChild($display);
+                            }
+                            else {
+                                var $display = document.createElement('div');
+                                $display.setAttribute('class', 'display');
+                                if ($IdDonvi == 0) {
+                                    var $DuLieuTextTong = $cot.DuLieuTextTong;
+                                    if ($DuLieuTextTong != null && $DuLieuTextTong.length > 0) {
+                                        $DuLieuTextTong.forEach(function ($UnitReport) {
+                                            var $p = document.createElement('p');
+                                            $p.innerHTML = '- ' + $UnitReport.UnitName + ': ' + $UnitReport.Data;
+                                            $display.appendChild($p)
+                                        });
+                                    }
+                                }
+                                else {
+                                    $display.innerHTML = $cot.DuLieuText;
+                                }
+                                $td.appendChild($display);
+                            }
+                            var stylecell = 'text-align:' + $cot.TieuDeCot.TextAlignValue + ';';
+                            if ($cot.TieuDeCot.TextBoldValue) {
+                                stylecell += ' font-weight: bold;';
+                            }
+                            if ($cot.TieuDeCot.TextUpperValue) {
+                                stylecell += ' text-transform: uppercase;';
+                            }
+                            $td.setAttribute('style', stylecell)
+                        }
+                        $tr.appendChild($td);
+                    });
+                }
+                $tbody.appendChild($tr)
+            });
+        }
+        function createHeaders($DanhSachTieuDe, $level, $thead) {
+            
+            var $tr = document.createElement('tr');
+            $DanhSachTieuDe.filter(function ($head) {
+                return $head.Level == $level;
+            }).forEach(function ($head) {
+                var $th = document.createElement('th');
+                if (!($head.IsNo == true || $head.IsComponent == true)) {
+                    $th.dataset.edit = true;
+                }
+                $th.dataset.idth = $head.Id;
+                $th.dataset.idHeaderCha = $head.HeaderId;
+                $th.colSpan = $head.ColSpan;
+                $th.rowSpan = $head.RowSpan;
+                $th.innerHTML = $head.TieuDe;
+                $tr.appendChild($th);
+            });
+            $thead.appendChild($tr);
+            if ($DanhSachTieuDe.filter(function ($head) {
+                return $head.Level == ($level + 1);
+            }).length > 0) {
+                createHeaders($DanhSachTieuDe, ($level + 1), $thead)
+            }
+            
+        }
+        @*function loadReportByUnit(IdUnit) {
+            var $ulbaocao = document.getElementById('list-baocao');
+            $ulbaocao.innerHTML = null;
+            JqueryPostData('/Report/GetDataReportAll', { IdPrecious: @Model.IdChinhSua, IdUnit: IdUnit}, function (res) {
+                    if (res.length > 0) {
+                        
+                        res.forEach(function ($baocao) {
+                            var $liBaocao = document.createElement('li');
+                            var $divTitle = document.createElement('div');
+                            $divTitle.setAttribute('class', 'login-session');
+                            $divTitle.innerText = $baocao.Title;
+                            var $btnShow = document.createElement('button');
+                            $btnShow.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                            $btnShow.setAttribute('aria-label', "Hiện thị biểu mẫu");
+                            $btnShow.innerHTML = '<i class="fa fa-eye"></i>';
+                            $btnShow.setAttribute('style', 'right: 50px;');
+                            $divTitle.appendChild($btnShow);
+                            $liBaocao.appendChild($divTitle);
+                            var $divboundtable = document.createElement('div');
+                            $divboundtable.setAttribute('class', 'ctm-table-bound');
+                            $divboundtable.setAttribute('style', 'display:none;width: 100%;');
+                            $divboundtable.appendChild(createTable($baocao, IdUnit))
+                            $liBaocao.appendChild($divboundtable);
+                            $btnShow.addEventListener('click', function () {
+                                var $table = this.closest('li').querySelector('.ctm-table-bound');
+                                if ($table.style.display == 'none') {
+                                    this.closest('.login-session').classList.add('view-log')
+                                    $table.style.display = 'inline-block'
+                                }
+                                else {
+                                    this.closest('.login-session').classList.remove('view-log')
+                                    $table.style.display = 'none'
+                                }
+                            });
+                            $ulbaocao.appendChild($liBaocao)
+                        });
+                    }
+                })
+        }
+        function createTable($data, IdUnit) {
+            var $table = document.createElement('table');
+            if ($data.AutoRow == false) {
+                $table.setAttribute('class', 'ctm-table ctm-unit-view');
+                var $thead = document.createElement('thead');
+                var $headers = $data.headers;
+                if ($headers.length > 0) {
+                    createHeaders($headers, 1, $thead)
+                }
+                $table.appendChild($thead);
+                if ($data.tableComponents.length > 0) {
+                    createTableBody($data.tableComponents, $table);
+
+                }
+
+            } else {
+                $table.setAttribute('class', 'ctm-table ctm-unit-view');
+                var $thead = document.createElement('thead');
+                var $headers = $data.headers;
+                $table.appendChild($thead);
+                createHeaderAuto($headers, 1, $thead)
+                createTableBodyAuto($headers, $data.IdBaoCao, $table, $thead, IdUnit)
+
+            }
+            return $table;
+        }
+
+        function createHeaderAuto($headers, $level, $thead) {
+            var $tr = document.createElement('tr');
+            
+            $headers.filter(function ($head) {
+                return $head.Level == $level;
+            }).forEach(function ($head) {
+                var $th = document.createElement('th');
+                if (!($head.Is_No == true || $head.Is_Component == true)) {
+                    $th.dataset.edit = true;
+                }
+                $th.dataset.idth = $head.Id;
+                $th.colSpan = $head.ColSpan;
+                $th.rowSpan = $head.RowSpan;
+                $th.innerHTML = $head.Title;
+                $tr.appendChild($th);
+            });
+            $thead.appendChild($tr);
+            if ($headers.filter(function ($head) {
+                return $head.Level == ($level + 1);
+            }).length > 0) {
+                createHeaderAuto($headers, ($level + 1), $thead)
+            }
+        }
+
+        function createTableBodyAuto($headers, $IdBaoCao, $table, $thead, IdUnit) {
+            var $tbody = document.createElement('tbody');
+            JqueryPostData('/Report/GetTableReportAutoRowAll', { IdUnit: IdUnit,IdPrecious : @Model.IdChinhSua, IdBaoCao: $IdBaoCao }, function (res) {
+                
+                if (res.length > 0) {
+                    res.forEach(function ($row) {
+                        addRowDataAuto($row, $table);
+                    })
+                }
+            })
+            $table.appendChild($tbody)
+        }
+        function addRowDataAuto($data, $table) {
+            var tr = document.createElement('tr');
+            for (var i = 0; i < $data.headers.length; i++) {
+                var $td = document.createElement('td');
+                var $dataColumn = $data.headers[i];
+                $td.innerHTML = '';
+                $td.dataset.datasource = JSON.stringify($dataColumn);
+                $td.innerHTML = '<div class="display">' + ($dataColumn.TextValue) + '</div><div class="editbox"></div>';
+
+                var stylecell = 'text-align:' + $dataColumn.TextAlign + ';';
+                if ($dataColumn.TextBold) {
+                    stylecell += ' font-weight: bold;';
+                }
+                if ($dataColumn.TextUpper) {
+                    stylecell += ' text-transform: uppercase;';
+                }
+                $td.querySelector('.display').setAttribute('style', stylecell);
+                tr.appendChild($td)
+            }
+            tr.dataset.RowId = $data.RowId;
+            $table.querySelector('tbody').appendChild(tr);
+        }
+
+        function createTableBody($data, $table) {
+            var $tbody = document.createElement('tbody');
+            $data.forEach(function ($row) {
+                var $tr = document.createElement('tr');
+                $row.headers.forEach(function ($dataColumn) {
+                    var $td = document.createElement('td');
+                    if ($dataColumn.Is_No == true || $dataColumn.Is_Component == true) {
+                        $td.innerHTML = $dataColumn.TextValue;
+                        $td.setAttribute('class', 'not-edit');
+                    }
+                    else {
+                        var $header = $table.querySelector('thead th[data-idth="' + ($dataColumn.HeaderId) + '"]');
+                        var offsetWidth = 0;
+                        if ($header) {
+                            offsetWidth = $header.offsetWidth;
+                        }
+                        $td.innerHTML = '<div class="display">' + ($dataColumn.TextUnit) + '</div><div class="editbox"></div>';
+                        
+                        if (offsetWidth > 0) {
+                            $td.style.width = offsetWidth + 'px';
+                        }
+
+                    }
+                    var stylecell = 'text-align:' + $dataColumn.TextAlign + ';';
+                    if ($dataColumn.TextBold) {
+                        stylecell += ' font-weight: bold;';
+                    }
+                    if ($dataColumn.TextUpper) {
+                        stylecell += ' text-transform: uppercase;';
+                    }
+                    $td.setAttribute('style', stylecell)
+                    $tr.appendChild($td)
+                });
+
+                $tbody.appendChild($tr);
+            });
+            $table.appendChild($tbody);
+        }
+
+        function createHeaders($headers, $level, $thead) {
+            var $tr = document.createElement('tr');
+            $headers.filter(function ($head) {
+                return $head.Level == $level;
+            }).forEach(function ($head) {
+                var $th = document.createElement('th');
+                if (!($head.Is_No == true || $head.Is_Component == true)) {
+                    $th.dataset.edit = true;
+                }
+                $th.dataset.idth = $head.Id;
+                $th.colSpan = $head.ColSpan;
+                $th.rowSpan = $head.RowSpan;
+                $th.innerHTML = $head.Title;
+                $tr.appendChild($th);
+            });
+            $thead.appendChild($tr);
+            if ($headers.filter(function ($head) {
+                return $head.Level == ($level + 1);
+            }).length > 0) {
+                createHeaders($headers, ($level + 1), $thead)
+            }
+        }*@
+        function ChuyenTab(nameForm, IdChinhSua) {
+            var $form = document.createElement('form');
+            var $inputTab = document.createElement('input');
+            $inputTab.type = 'hidden';
+            $inputTab.name = 'tab';
+            switch (nameForm) {
+                case 'ChuyenTabDanhSach':
+                    $inputTab.value = 1;
+                    break;
+                case 'ChuyenTabChiTiet':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 2;
+                    break;
+            }
+
+            $form.action = '/report/reportlist';
+            $form.method = 'POST';
+            $form.appendChild($inputTab);
+            document.body.appendChild($form);
+            $form.submit();
+        }
+    </script>
+}
+

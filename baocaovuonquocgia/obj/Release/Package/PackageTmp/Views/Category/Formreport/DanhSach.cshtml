@@ -1,0 +1,39 @@
+﻿@using baocaovuonquocgia.App_Data
+<ul class="nav nav-tabs nav-tabs-colored">
+    <li class="active"><a>Danh sách</a></li>
+</ul>
+@{
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var _ReportTable = tongcuclamnghiep.m_reporttable.Where(a => a.status == true).OrderBy(a => a.order).Select(a => new { a.id, a.title,a.autorow });
+}
+<div class="tab-content tab-content-colored">
+    <div class="tab-pane fade in active">
+        <div class="row">
+            <div class="col-md-12">
+
+                <ul id="DanhSachSapXepBaoCao" class="facet-list ui-sortable">
+                    @foreach (var item in _ReportTable)
+                    {
+                        if (item.autorow == true)
+                        {
+                            @Html.Raw("<li class='facet ui-sortable-handle' data-id=" + (item.id) + ">" + (item.title) + " <a class='hint--top x-chinhsuatieudebang' style='cursor: pointer; ' aria-label='Chỉnh sửa tiêu đề bảng báo cáo'><i class='lnr lnr-pencil'></i></a><a class='hint--top x-taibaocaomau' style='cursor: pointer; ' aria-label='Tải báo cáo mẫu'><i class='fa fa-file-excel-o'></i></a></li>")
+                        }
+                        else
+                        {
+                            @Html.Raw("<li class='facet ui-sortable-handle' data-id=" + (item.id) + ">" + (item.title) + " <a class='hint--top x-chinhsuatieudebang' style='cursor: pointer; ' aria-label='Chỉnh sửa tiêu đề bảng báo cáo'><i class='lnr lnr-pencil'></i></a><a class='hint--top x-chinhsuathanhphan' style='cursor: pointer; ' aria-label='Chỉnh sửa thành phần cột'><i class='lnr lnr-pencil'></i></a><a class='hint--top x-taibaocaomau' style='cursor: pointer; ' aria-label='Tải báo cáo mẫu'><i class='fa fa-file-excel-o'></i></a></li>")
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary float-right" id="btn_CapnhatSapXepBaoCao">Cập nhật</button>
+                    <button type="button" class="btn btn-primary float-right" id="btn_reset">Làm lại</button>
+                    <button type="button" class="btn btn-primary float-right" style="    background-color: #21b24bb5; border-color:#21b24bb5" id="btn_TaiBaoCaoAll">Tải toàn bộ mẫu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+﻿
+@using baocaovuonquocgia.App_Data
+
+@{
+    tongcuclamnghiepEntities tongcuclamnghiep    = new tongcuclamnghiepEntities();
+    var danhsachquyen = tongcuclamnghiep.m_role.Where(a => a.status == true).Select(a => new { a.id, a.rolename });
+}
+
+<ul class="nav nav-tabs nav-tabs-colored">
+    <li><a onclick="ChuyenTab('ChuyenTabDanhSach')">Danh sách</a></li>
+    <li class="active"><a>Thêm mới</a></li>
+</ul>
+<div class="tab-content tab-content-colored">
+    <div class="tab-pane fade in active">
+        <div class="panel-content">
+            <form novalidate id="form_ThemmoiAccount">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txt_username">Tên đăng nhập <required> * </required></label>
+                            <input type="text" id="txt_username" name="UserName" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [5,50] },{ name: 'username' }])">
+                            <label class="parsley-required"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txt_email">Email <required> * </required></label>
+                            <input type="email" id="txt_email" name="Email" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [5,200] },{ name: 'email' }])">
+                            <label class="parsley-required"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txt_fullname">Họ và Tên <required> * </required></label>
+                            <input type="text" id="txt_fullname" name="FullName" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [5,100] }])">
+                            <label class="parsley-required"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txt_phone">Giới tính <required> * </required></label>
+                            <select class="form-control" name="Gender" id="sl_gender">
+                                <option value="1">Nam</option>
+                                <option value="0">Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="sl_Role">Quyền <required> * </required></label>
+                            <select class="form-control" name="Role" id="sl_Role">
+                                @foreach (var item in danhsachquyen)
+                                {
+                                    @Html.Raw("<option value=" + item.id + ">" + item.rolename + "</option>")
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary float-right" id="btn_themmoi">Thêm mới</button>
+                            <button type="button" class="btn btn-primary float-right" id="btn_reset">Làm lại</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+

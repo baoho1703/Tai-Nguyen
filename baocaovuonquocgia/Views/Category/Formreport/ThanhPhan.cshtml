@@ -1,0 +1,91 @@
+﻿@using baocaovuonquocgia.App_Data
+@model baocaovuonquocgia.Models.ControllerTab
+@{
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var _ReportTable = tongcuclamnghiep.m_reporttable.Where(a => a.id == Model.IdChinhSua).FirstOrDefault();
+}
+<ul class="nav nav-tabs nav-tabs-colored">
+    <li><a onclick="ChuyenTab('ChuyenTabDanhSach')">Danh sách</a></li>
+    <li class="active"><a>Tiêu đề cột báo cáo</a></li>
+</ul>
+<div class="tab-content tab-content-colored">
+    <div class="tab-pane fade in active">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="designTable">
+                    <table class="ctm-table">
+                        <thead>
+
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="properties" style="width:350px; display:none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="txt_tenhienthi">Tên <required> * </required></label>
+                                    <input type="text" id="txt_tenhienthi" name="txt_tenhienthi" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [1,500] }])">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Cài đặt</label>
+                                    <br>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbRowBold">
+                                        <span>Chữ in đậm</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbUpper">
+                                        <span>Viết hoa</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbValueBold">
+                                        <span>Giá trị in đậm</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbValueUpper">
+                                        <span>Giá trị in hoa</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbSTT">
+                                        <span>Cột thứ tự</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbComponent">
+                                        <span>Cột thành phần</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbStatus">
+                                        <span>Hiển thị</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary float-right" id="btn_Capnhat">Cập nhật</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="help">
+                    <div class="plan selected-plan">
+                        <h3 class="plan-title">Ghi chú <span>(lựa chọn) <i class="fa fa-check-circle"></i></span></h3>
+                        <ul class="list-unstyled list-plan-details">
+                            <li>LOẠI I : Giá trị là chữ, không tính tống báo cáo năm</li>
+                            <li>LOẠI II : Giá trị là số, không tính tống báo cáo năm</li>
+                            <li>LOẠI III : Giá trị là số, tính tổng cuối năm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

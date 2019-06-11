@@ -1,0 +1,182 @@
+﻿
+@{
+    ViewBag.Title = "Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model baocaovuonquocgia.Models.ControllerTab
+
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Tài khoản hệ thống</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.Tab == 1)
+            {
+                @Html.Partial("~/Views/Manager/Account/DanhSach.cshtml")
+            }
+            @if (Model.Tab == 2)
+            {
+                @Html.Partial("~/Views/Manager/Account/ThemMoi.cshtml")
+
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        var $tableAccount;
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var Tab =@Model.Tab;
+            if (Tab == 1) {
+                $tableAccount = $('#tableAccount').dataTable({
+                    ajax: '/manager/GetAccountTable',
+                    processing: true,
+                    serverSide: true,
+                    width: 'auto',
+                    bSort: false,
+                    bDestroy: true,
+                    responsive: true,
+                    columns: [
+                        {
+                            data: 'id',
+                            class: 'text-center column-80',
+                        },
+                        {
+                            data: 'fullname'
+                        },
+                        {
+                            data: 'username'
+                        },
+                        {
+                            data: 'gender',
+                            mRender: function (data, type, row) {
+                                var rt = (data == true ? 'Nam' : 'Nữ');
+                                return rt;
+                            }
+                        },
+                        {
+                            data: 'email'
+                        },
+                        {
+                            data: 'rolename'
+                        },
+                        {
+                            data: 'id',
+                            mRender: function (data, type, row) {
+                                var rt = '<a class="hint--top x-sendmail" style="cursor: pointer;" aria-label="Gửi thông tin tài khoản qua email"><i class="fa fa-paper-plane"></i></a>';
+                                return rt;
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0,
+                    }],
+                    "order": [[1, 'asc']],
+                    responsive: true,
+                    searching: true,
+                    bLengthChange: false,
+                    iDisplayLength: 10,
+                    drawCallback: function (oSettings) {
+
+                    },
+                    fnCreatedRow: function (row, data, index) {
+                        var page = this.api().page();
+                        var len = this.api().page.len();
+                        $('td', row).eq(0).html((page * len) + (index + 1));
+                        if ($('td', row).eq(6)[0].querySelector('.x-sendmail')) {
+                            $('td', row).eq(6)[0].querySelector('.x-sendmail').addEventListener('click', function () {
+                                JqueryPostData('/Manager/GuiMatKhau', { IdAccount: data.id }, function (res) {
+                                    Alert(res.message, function () {})
+                                })
+                            });
+                        }
+                    },
+                    language: {
+                        lengthMenu: "Lọc theo _MENU_",
+                        zeroRecords: "Không có dòng nào",
+                        info: "Tổng cộng _TOTAL_ dòng",
+                        emptyTable: "Không có dữ liệu nào trong bảng",
+                        infoEmpty: "Không có dòng nào",
+                        loadingRecords: "Tải dữ liệu...",
+                        processing: '<div class="nloading"></div>',
+                        search: "Tìm kiếm:",
+                        searchPlaceholder: "Tìm kiếm theo nội dung ...",
+                        paginate: {
+                            first: "Đầu",
+                            last: "Cuối",
+                            next: "Tiếp",
+                            previous: "Trước"
+                        }
+                    }
+                });
+            }
+            if (Tab == 2) {
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    clearForm(document.getElementById('form_ThemmoiAccount'));
+                });
+                document.getElementById('btn_themmoi').addEventListener('click', function () {
+                    var txt_username = document.getElementById('txt_username');
+                    var txt_email = document.getElementById('txt_email');
+                    var txt_fullname = document.getElementById('txt_fullname');
+                    var sl_gender = document.getElementById('sl_gender');
+                    var sl_Role = document.getElementById('sl_Role');
+                    var txt_phone = document.getElementById('txt_phone');
+                    var rt = { bool: true };
+                    if (rt.bool == true) {
+                        rt = ElementValidation(txt_username, [{ name: 'rangelength', requirement: [5, 50] }, { name: 'username' }]);
+                    }
+                    if (rt.bool == true) {
+                        rt = ElementValidation(txt_email, [{ name: 'rangelength', requirement: [5, 200] }, { name: 'email' }])
+                    }
+                    if (rt.bool == true) {
+                        rt = ElementValidation(txt_fullname, [{ name: 'rangelength', requirement: [5, 100] }])
+                    }
+                    if (rt.bool == true) {
+                        var datasend = {
+                            UserName: String(txt_username.value).trim(),
+                            Email: String(txt_email.value).trim(),
+                            FullName: String(txt_fullname.value).trim(),
+                            Gender: sl_gender.options[sl_gender.selectedIndex].value,
+                            Role: sl_Role.options[sl_Role.selectedIndex].value
+                        }
+                        JqueryPostData('/Manager/ThemMoiTaiKhoan', { accountNew: datasend }, function (res) {
+                            Alert(res.message, function () {
+                                clearForm(document.getElementById('form_ThemmoiAccount'));
+                            })
+                        })
+                    }
+                    else {
+                        Alert(rt.msg, function () {
+
+                        })
+                    }
+
+                })
+            }
+        })
+        function ChuyenTab(nameForm) {
+            var $inputTab = document.createElement('input');
+            $inputTab.type = 'hidden';
+            $inputTab.name = 'tab';
+            switch (nameForm) {
+                case 'ChuyenTabThemMoi':
+                    $inputTab.value = 2;
+                    break;
+                case 'ChuyenTabDanhSach':
+                    $inputTab.value = 1;
+                    break;
+            }
+            var $form = document.createElement('form');
+            $form.action = '/manager/account';
+            $form.method = 'POST';
+            $form.appendChild($inputTab);
+            document.body.appendChild($form);
+            $form.submit();
+        }
+    </script>    
+}

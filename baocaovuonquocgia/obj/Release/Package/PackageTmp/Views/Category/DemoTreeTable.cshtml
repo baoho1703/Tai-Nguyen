@@ -1,0 +1,235 @@
+﻿
+@{
+    ViewBag.Title = "DemoTreeTable";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style type="text/css">
+    table.tree-report {
+        border-collapse: collapse;
+        font-family: tahoma, arial, helvetica;
+        font-size: 10pt;
+        white-space: nowrap;
+        padding: 3px;
+        margin: 0;
+        background-color: #FCFCFC;
+        border: 1px dotted gray;
+        overflow: auto;
+        width: 100%;
+    }
+        table.tree-report thead tr th{
+            text-align:center
+        }
+        table.tree-report tbody tr td, table.tree-report thead tr th {
+            border: 1px solid #EDEDED;
+            padding: 5px;
+            font-weight: 200;
+            background-color:#fff
+        }
+        table.tree-report tbody tr td {
+            padding:0 5px;
+
+        }
+        table.tree-report .box-space {
+            width: 20px;
+            padding: 5px;
+            float: left;
+        }
+        /*table.tree-report td .box-space:first-child {
+            width: 0;
+            float: left
+        }*/
+            table.tree-report .box-space:before {
+                display: inline-block;
+                content: ' '
+            }
+        table.tree-report .box-text {
+            white-space: normal;
+            display: table-cell;
+            padding: 5px;
+            padding-left: 2px;
+        }
+        /*table.tree-report td.first-child {
+            padding-left: 20px;
+        }*/
+
+        /*table.tree-report tbody tr td.first-child {
+            background: #fff url("https://d33wubrfki0l68.cloudfront.net/da489f10e67d8a113273c87254f55c622e1aa472/38d02/media/2006/01/folder-background.png") center left no-repeat;
+        }
+
+        table.tree-report tbody tr.first-child td.first-child {
+            background: #fff url("https://d33wubrfki0l68.cloudfront.net/da489f10e67d8a113273c87254f55c622e1aa472/38d02/media/2006/01/folder-background.png") top left no-repeat;
+        }
+
+        table.tree-report tbody tr.last-child td.first-child {
+            background: #fff url("https://d33wubrfki0l68.cloudfront.net/da489f10e67d8a113273c87254f55c622e1aa472/38d02/media/2006/01/folder-background.png") bottom left no-repeat;
+        }*/
+    .tree-report .box-folder {
+        background: #fff url("https://d33wubrfki0l68.cloudfront.net/da489f10e67d8a113273c87254f55c622e1aa472/38d02/media/2006/01/folder-background.png") top left no-repeat;
+        padding-top: 0!important;
+        margin-top:5px
+        }
+    .tree-report .box-line-join {
+        background: #fff url("https://d33wubrfki0l68.cloudfront.net/da489f10e67d8a113273c87254f55c622e1aa472/38d02/media/2006/01/folder-background.png") center left no-repeat;
+    }
+    .tree-report .box-line-join-end {
+        background: #fff url("https://d33wubrfki0l68.cloudfront.net/da489f10e67d8a113273c87254f55c622e1aa472/38d02/media/2006/01/folder-background.png") bottom left no-repeat;
+        padding-bottom: 0 !important;
+        margin-bottom: 5px;
+    }
+    table.tree-report .not-childs .box-space:nth-last-child(2) {
+        width:0px
+    }
+    .tree-report .box-line {
+        background: #fff url("https://www.cssscript.com/demo/pure-javascript-treeview-component-aimarajs/css/vline.png") repeat-y;
+        background-position-x: 4px;
+    }
+</style>
+<table class="tree-report">
+    <thead>
+        <tr>
+            <th rowspan="2"></th>
+            <th rowspan="2">Loại đất loại rừng</th>
+            <th rowspan="2">Diện tích quy hoạch</th>
+            <th colspan="3">Phân khu chức năng</th>
+        </tr>
+        <tr>
+            <th>Bảo vệ NN</th>
+            <th>Phục hồi ST</th>
+            <th>Dịch vụ H.chính</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="">
+            <td class=""></td>
+            <td class="childs child-1"><div class="box-space box-folder"></div><div class="box-text">I. Rừng phân theo nguồn gốc</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="childs"><div class="box-space box-line-join"></div><div class="box-space box-folder"></div><div class="box-text">1. Rừng tự nhiên</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line"></div><div class="box-space box-line-join"></div><div class="box-space"></div><div class="box-text">- Rừng nguyên sinh</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line"></div><div class="box-space box-line-join-end"></div><div class="box-space"></div><div class="box-text">- Rừng thứ sinh</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="childs"><div class="box-space box-line-join-end"></div><div class="box-space box-folder"></div><div class="box-text">2. Rừng trồng</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space"></div><div class="box-space box-line-join"></div><div class="box-space"></div><div class="box-text">- Trồng mới trên đất chưa có rừng</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space"></div><div class="box-space box-line-join-end "></div><div class="box-space"></div><div class="box-text">- Trồng lại sau khai thác</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="childs child-1"><div class="box-space box-folder"></div><div class="box-text">II. Rừng phân theo lập địa</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line-join"></div><div class="box-space"></div><div class="box-text">1. Rừng trên núi đất</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line-join"></div><div class="box-space"></div><div class="box-text">2. Rừng trên núi đá</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="childs"><div class="box-space box-line-join"></div><div class="box-space box-folder"></div><div class="box-text">3. Rừng trên đất ngập nước</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line"></div><div class="box-space box-line-join"></div><div class="box-space"></div><div class="box-text">- Rừng ngập mặn</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line"></div><div class="box-space box-line-join"></div><div class="box-space"></div><div class="box-text">- Rừng trên đất phèn</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line"></div><div class="box-space box-line-join-end"></div><div class="box-space"></div><div class="box-text">- Rừng ngập nước ngọt</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+        <tr class="">
+            <td class=""></td>
+            <td class="not-childs"><div class="box-space box-line-join-end"></div><div class="box-space"></div><div class="box-text">4. Rừng trên cát</div></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+            <td class=""></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    JqueryPostData('/Category/GetBangBaoCao',
+        {
+            IdBaoCao: 1
+        }, function (res) {
+            console.log(res)
+        });
+</script>
+

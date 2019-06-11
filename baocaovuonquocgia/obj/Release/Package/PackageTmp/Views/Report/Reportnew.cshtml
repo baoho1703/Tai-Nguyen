@@ -1,0 +1,788 @@
+﻿
+@{
+    ViewBag.Title = "Reportnew";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using baocaovuonquocgia.App_Data
+@using baocaovuonquocgia.Models
+@{ 
+    bool CheckCreateUpdate = true;
+    m_unit _Unit =new m_unit();
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var _Precious = tongcuclamnghiep.m_precious.Where(a => a.status == false).FirstOrDefault();
+    if (_Precious != null)
+    {
+        AccountCookie accountCookie = (AccountCookie)Session["AccountCookie"];
+        _Unit = tongcuclamnghiep.m_unit.Where(a => a.account_id == accountCookie.Id && a.status==true).FirstOrDefault();
+        if (_Unit == null)
+        {
+            CheckCreateUpdate = false;
+        }
+        else
+        {
+            var _UnitPrecious = tongcuclamnghiep.m_unit_precious.Where(a => a.precious_id == _Precious.id && a.unit_id == _Unit.id).FirstOrDefault();
+            if (_UnitPrecious != null && _UnitPrecious.completedate != null)
+            {
+                CheckCreateUpdate = false;
+            }
+        }
+    }
+    else
+    {
+        CheckCreateUpdate = false;
+    }
+}
+
+<style type="text/css">
+    .view-data-save .bound{
+
+    }
+    .view-data-save {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 1000000;
+        background-color:#ddd
+    }
+        .view-data-save .view-data-content {
+            width: calc(100% - 20px);
+            height: calc(100% - 50px);
+            overflow:scroll
+        }
+</style>
+
+@{
+
+        if (CheckCreateUpdate == true)
+        {
+    <div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Cập nhật báo cáo</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-unstyled list-login-session" id="list-baocao">
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button type="button" class="btn btn-primary float-right" id="btn_hoanthanhbaocao">Hoàn thành báo cáo</button>
+            </div>
+        </div>
+    </div>
+</div>
+        <div id="view-data-save" style="display:none" class="view-data-save">
+            <div class="container-fluid view-data-content">
+                <div class="row">
+                    <div class="container-data"></div>
+                </div>
+            </div>
+            <div class="bound">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@section scripts
+{
+    @if (CheckCreateUpdate ==true)
+    {
+        <script type="text/javascript">
+            document.getElementById('btn_hoanthanhbaocao').addEventListener('click', function () {
+                
+                var $pop = document.getElementById('view-data-save');
+                
+                var $popCopy = $pop.cloneNode(true);
+                $popCopy.id = 'popCopy';
+                $popCopy.style.display = 'block';
+                var $ul = document.getElementById('list-baocao').cloneNode(true);
+                $ul.id = 'popCopyul';
+                $popCopy.querySelector('.container-data').appendChild($ul)
+                for (var i = 0; i < $popCopy.querySelectorAll('li').length; i++) {
+                    var $li = $popCopy.querySelectorAll('li')[i];
+                    $li.querySelector('.login-session').classList.add('view-log');
+                    $li.querySelector('.ctm-table-bound').setAttribute('style','display: inline-block; width: 100%;');
+                }
+                $popCopy.style.height = (document.body.offsetHeight) + 'px';
+                $popCopy.style.width = (document.body.offsetWidth) + 'px';
+
+                $popCopy.querySelector('.bound').innerHTML = '<button type="button" class="btn btn-primary float-right" id="btn_hoanthanhlast">Hoàn thành báo cáo</button><button type="button" class="btn btn-primary float-right" id="btn_thoat">Không. Cám ơn!</button>';
+                $popCopy.querySelector('#btn_hoanthanhlast').addEventListener('click', function () {
+                    var $question = confirm('Bạn có muốn hoàn thành báo cáo không?');
+                    if ($question == true) {
+                        JqueryPostData('/Report/HoanThanhBaoCaoUnit', {}, function (res) {
+                            if (res.success == true) {
+                                window.location = window.location;
+                            }
+                            else {
+                                Alert(res.message, function () { })
+                            }
+                        })
+                    }
+                })
+                $popCopy.querySelector('#btn_thoat').addEventListener('click', function () {
+                    $popCopy.remove();
+                })
+                document.body.appendChild($popCopy)
+            })
+            JqueryPostData('/Report/GetDanhSachBaoCaoUnitNew', {}, function (res) {
+                if (res.length > 0) {
+                    var $ulbaocao = document.getElementById('list-baocao');
+                    res.forEach(function ($baocao) {
+                        var $liBaocao = document.createElement('li');
+                        var $divTitle = document.createElement('div');
+                        $divTitle.setAttribute('class', 'login-session');
+                        $divTitle.innerText = $baocao.TieuDe;
+                        var $btnShow = document.createElement('button');
+                        $btnShow.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnShow.setAttribute('aria-label', "Hiện thị biểu mẫu");
+                        $btnShow.innerHTML = '<i class="fa fa-eye"></i>';
+                        $btnShow.setAttribute('style', 'right: 50px;');
+                        $divTitle.appendChild($btnShow);
+                        $liBaocao.appendChild($divTitle);
+                        var $divboundtable = document.createElement('div');
+                        $divboundtable.setAttribute('class', 'ctm-table-bound');
+                        $divboundtable.setAttribute('style', 'display:none;width: 100%;');
+                        $divboundtable.appendChild(createTable($baocao))
+                        $liBaocao.appendChild($divboundtable);
+                        $btnShow.addEventListener('click', function () {
+                            var $table = this.closest('li').querySelector('.ctm-table-bound');
+                            if ($table.style.display == 'none') {
+                                this.closest('.login-session').classList.add('view-log')
+                                $table.style.display = 'inline-block'
+                            }
+                            else {
+                                this.closest('.login-session').classList.remove('view-log')
+                                $table.style.display = 'none'
+                            }
+                        });
+                        $ulbaocao.appendChild($liBaocao)
+                    });
+                }
+            })
+            function createTable($data) {
+                var $table = document.createElement('table');
+                if ($data.Loai == 0) {
+                    $table.setAttribute('class', 'ctm-table ctm-unit');
+                }
+                else {
+                    $table.setAttribute('class', 'ctm-table');
+                }
+                var $thead = document.createElement('thead');
+                var $DanhSachTieuDe = $data.DanhSachTieuDe;
+                if ($DanhSachTieuDe.length > 0) {
+                    createHeaders($DanhSachTieuDe, 1, $thead, $data)
+                }
+                $table.appendChild($thead);
+                var $tbody = document.createElement('tbody');
+                var $DanhSachDong = $data.DanhSachDong;
+                if ($DanhSachDong.length > 0) {
+                    createTbody($DanhSachDong, $data, $tbody);
+                }
+                if ($data.Loai == 1) {
+                    var $rowadd = document.createElement('tr');
+                    for (var i = 0; i < $data.DanhSachTieuDeCol.length+1; i++) {
+                        var $td = document.createElement('td');
+                        if (i == 0) {
+                            $td.innerHTML = '<div class="add-row hint--right" aria-label="Thêm dòng mới"><i class="fa fa-plus" aria-hidden="true"></i></div>';
+                            $td.querySelector('.add-row').addEventListener('click', function () {
+                                addRowAuto($table, $data.Id);
+                            })
+                        }
+                        $rowadd.appendChild($td)
+                    }
+                    $tbody.appendChild($rowadd);
+                }
+                $table.appendChild($tbody);
+                return $table;
+            }
+            function createTbody($DanhSachDong, $dataTable, $tbody) {
+                $DanhSachDong.forEach(function ($dong) {
+                    var $tr = document.createElement('tr');
+                    $tr.dataset.RowId = $dong.RowId;
+                    if ($dataTable.Loai == 1) {
+                        $tr.innerHTML = '<td><div aria-label="Xóa dòng" class="remove-row hint--right"><i class="fa fa-trash" aria-hidden="true"></i></div></td>';
+                        addEventListenerRemoveRowAuto($tr.querySelector('td'), $dataTable)
+                    }
+                    var $DanhSachCot = $dong.DanhSachCot;
+                    if ($DanhSachCot.length > 0) {
+                        $DanhSachCot.forEach(function ($cot) {
+                            var $td = document.createElement('td');
+                            if ($cot.TieuDeCot.IsNo == true || $cot.TieuDeCot.IsComponent == true) {
+                                $td.setAttribute('class', 'not-edit');
+                                $td.innerHTML = $cot.DuLieuText;
+                            }
+                            else {
+                                if ($dataTable.Loai == 0) {
+                                    var $display = document.createElement('div');
+                                    $display.setAttribute('class', 'display');
+                                    $display.innerHTML = $cot.DuLieuText;
+                                    var $editbox = document.createElement('div');
+                                    $editbox.setAttribute('class', 'editbox');
+                                    var $input = document.createElement('input');
+
+                                    if ($cot.TypeValue == 1) {
+                                        $input.type = 'text';
+                                    }
+                                    if ($cot.TypeValue == 2 || $cot.TypeValue == 3) {
+                                        $input.type = 'number';
+                                    }
+                                    if ($cot.Save == true) {
+                                        $td.classList.add('data-save');
+                                    }
+                                    if ($cot.Save == false) {
+                                        $td.classList.add('data-notsave');
+                                    }
+                                    $editbox.appendChild($input)
+                                    $td.addEventListener('dblclick', function () {
+                                        var $this = this;
+                                        var offsetWidth = $this.offsetWidth;
+                                        var $datasource = JSON.parse($this.dataset.datasource);
+                                        
+                                        $this.querySelector('input').value = $datasource.DuLieuText;
+                                        $this.querySelector('input').style.width = offsetWidth + 'px';
+                                        $this.style.width = offsetWidth + 'px';
+                                        $this.querySelector('.editbox').style.width = offsetWidth + 'px';
+                                        $this.querySelector('.display').style.display = 'none';
+                                        $this.querySelector('.editbox').style.display = 'inline-flex';
+                                        $this.querySelector('input').focus();
+                                    })
+                                    $td.dataset.datasource = JSON.stringify($cot);
+                                    $input.addEventListener('blur', function () {
+                                        var $this = this;
+                                        var $datasource = JSON.parse($this.closest('td').dataset.datasource);
+
+                                        if (!($datasource.TextUnit == $this.value)) {
+                                            JqueryPostData('/Report/CapNhatDataComponentReportUnit', { IdComponent: $datasource.Id, TextValue: $this.value }, function ($resUpdate) {
+                                                if ($resUpdate.success) {
+                                                    $this.closest('td').querySelector('.editbox').style.display = 'none';
+                                                    $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+                                                    $datasource.DuLieuText = $this.value;
+                                                    $this.closest('td').querySelector('.display').innerHTML = $datasource.DuLieuText;
+                                                    $this.closest('td').dataset.datasource = JSON.stringify($datasource);
+                                                    $this.closest('td').classList.add('data-save');
+                                                    $this.closest('td').classList.remove('data-notsave');
+                                                }
+                                                else {
+                                                    $this.value = $datasource.DuLieuText;
+                                                    Alert(res.message, function () { })
+                                                }
+                                            })
+                                        }
+                                        else {
+                                            $this.closest('td').querySelector('.editbox').style.display = 'none';
+                                            $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+                                        }
+
+                                    });
+                                    $input.onkeypress = function ($e) {
+                                        if ($e.keyCode == 13) {
+                                            this.blur();
+                                        }
+                                        return true;
+                                    }
+
+
+
+                                    $td.appendChild($display);
+                                    $td.appendChild($editbox);
+                                }
+                                else {
+                                    var $display = document.createElement('div');
+                                    $display.setAttribute('class', 'display');
+                                    $display.innerHTML = $cot.DuLieuText;
+                                    var $editbox = document.createElement('div');
+                                    $editbox.setAttribute('class', 'editbox');
+                                    var $input = document.createElement('input');
+                                    $editbox.appendChild($input)
+                                    $td.appendChild($display);
+                                    $td.appendChild($editbox);
+                                    $td.dataset.datasource = JSON.stringify($cot);
+                                    addEventListenerEditRowAuto($td);
+                                }
+                                var stylecell = 'text-align:' + $cot.TieuDeCot.TextAlignValue + ';';
+                                if ($cot.TieuDeCot.TextBoldValue) {
+                                    stylecell += ' font-weight: bold;';
+                                }
+                                if ($cot.TieuDeCot.TextUpperValue) {
+                                    stylecell += ' text-transform: uppercase;';
+                                }
+                                $td.setAttribute('style', stylecell)
+                            }
+                            $tr.appendChild($td);
+                        });
+                    }
+                    $tbody.appendChild($tr)
+                });
+            }
+
+            function addRowAuto($table, IdBaoCao) {
+                var tr = $table.rows[$table.rows.length - 1].cloneNode(true);
+                JqueryPostData('/Report/ThemMoiThanhPhanAuto', { IdBaoCao: IdBaoCao, RowId: $table.querySelectorAll('tbody tr').length }, function (res) {
+                    if (res.success) {
+                        addRowDataAuto(res.extend, $table);
+                    }
+                    else {
+                        Alert(res.message, function () { })
+                    }
+                })
+            }
+            function addRowDataAuto($data, $table) {
+                var tr = document.createElement('tr');
+                for (var i = -1; i < $data.DanhSachCot.length; i++) {
+                    var $td = document.createElement('td');
+                    
+                    if (i == -1) {
+                        $td.innerHTML = '';
+                        $td.dataset.dataRow = JSON.stringify($data);
+                        var $removeRow = document.createElement('div');
+                        $removeRow.setAttribute('class', 'remove-row hint--right');
+                        $removeRow.setAttribute('aria-label', 'Xóa dòng');
+                        $removeRow.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
+                        $td.appendChild($removeRow);
+                        addEventListenerRemoveRowAuto($td)
+                    }
+                    else {
+                        var $dataColumn = $data.DanhSachCot[i - 1];
+                        $td.innerHTML = '';
+                        $td.dataset.datasource = JSON.stringify($dataColumn);
+                        $td.innerHTML = '<div class="display">' + ($dataColumn.DuLieuText) + '</div><div class="editbox"></div>';
+                        var $input = document.createElement('input')
+
+                        var $editbox = $td.querySelector('.editbox')
+                        var $input = document.createElement('input');
+                        $editbox.appendChild($input);
+                        $td.dataset.datasource = JSON.stringify($dataColumn);
+                        addEventListenerEditRowAuto($td)
+                        var stylecell = 'text-align:' + $dataColumn.TieuDeCot.TextAlignValue + ';';
+                        if ($dataColumn.TieuDeCot.TextBoldValue) {
+                            stylecell += ' font-weight: bold;';
+                        }
+                        if ($dataColumn.TieuDeCot.TextUpperValue) {
+                            stylecell += ' text-transform: uppercase;';
+                        }
+                        $td.querySelector('.display').setAttribute('style', stylecell)
+                    }
+                    tr.appendChild($td);
+                }
+                tr.dataset.RowId = $data.RowId;
+                $table.rows[$table.rows.length - 1].parentNode.insertBefore(tr, $table.rows[$table.rows.length - 1]);
+            }
+            function addEventListenerRemoveRowAuto($td, $dataTable) {
+                $td.querySelector('.remove-row').addEventListener('click', function () {
+                    var $this = this;
+                    var $question = confirm("Bạn có muốn xóa không?");
+                    if ($question == true) {
+                        var RowId = $this.closest('tr').dataset.RowId
+                        var IdBaoCao = $dataTable.Id;
+                        JqueryPostData('/Report/XoaDuLieuBaoCaoUnitAuto', { RowId: RowId, IdBaoCao: IdBaoCao }, function (res) {
+                            if (res.success) {
+                                $this.closest('tr').remove();
+                            }
+                            else {
+                                Alert(res.message, function () { })
+                            }
+                        })
+                    }
+                })
+            }
+            function addEventListenerEditRowAuto($td) {
+                $td.addEventListener('dblclick', function () {
+                    var $this = this;
+                    var offsetWidth = $this.offsetWidth;
+                    $this.style.width = offsetWidth + 'px';
+                    $this.querySelector('.editbox').style.width = offsetWidth + 'px';
+                    $this.querySelector('input').style.width = offsetWidth + 'px';
+                    var $datasource = JSON.parse($this.dataset.datasource)
+                    $this.querySelector('input').value = $datasource.DuLieuText;
+                    $this.querySelector('.display').style.display = 'none';
+                    $this.querySelector('.editbox').style.display = 'inline-flex';
+                    $this.querySelector('input').focus();
+                })
+                $td.querySelector('.editbox input').addEventListener('blur', function () {
+                    var $this = this;
+                    var $datasource = JSON.parse($this.closest('td').dataset.datasource);
+
+                    if (!($datasource.DuLieuText == $this.value)) {
+                        JqueryPostData('/Report/CapNhatDataComponentAutoReportUnit', { RowHeaderId: $datasource.Id , TextValue: $this.value }, function ($resUpdate) {
+                            if ($resUpdate.success) {
+                                $this.closest('td').querySelector('.editbox').style.display = 'none';
+                                $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+                                $datasource.DuLieuText = $this.value;
+                                $this.closest('td').querySelector('.display').innerHTML = $datasource.DuLieuText;
+                                $this.closest('td').dataset.datasource = JSON.stringify($datasource);
+                                $this.closest('td').classList.add('data-save');
+                                $this.closest('td').classList.remove('data-notsave');
+                            }
+                            else {
+                                $this.value = $datasource.DuLieuText;
+                                Alert($resUpdate.message, function () { })
+                            }
+                        })
+                    }
+                    else {
+                        $this.closest('td').querySelector('.editbox').style.display = 'none';
+                        $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+                    }
+
+                });
+                $td.querySelector('.editbox input').onkeypress = function ($e) {
+                    if ($e.keyCode == 13) {
+                        this.blur();
+                    }
+                    return true;
+                }
+            }
+            function createHeaders($DanhSachTieuDe, $level, $thead, $dataTable) {
+
+                var $tr = document.createElement('tr');
+                if ($level == 1 && $dataTable.Loai==1) {
+                    $tr.innerHTML = '<th rowspan=' + (Math.max.apply(Math, $DanhSachTieuDe.map(function (o) { return o.Level; }))) + '></th>';
+                }
+                $DanhSachTieuDe.filter(function ($head) {
+                    return $head.Level == $level;
+                }).forEach(function ($head) {
+                    var $th = document.createElement('th');
+                    if (!($head.IsNo == true || $head.IsComponent == true)) {
+                        $th.dataset.edit = true;
+                    }
+                    $th.dataset.idth = $head.Id;
+                    $th.dataset.idHeaderCha = $head.HeaderId;
+                    $th.colSpan = $head.ColSpan;
+                    $th.rowSpan = $head.RowSpan;
+                    $th.innerHTML = $head.TieuDe;
+                    $tr.appendChild($th);
+                });
+                $thead.appendChild($tr);
+                if ($DanhSachTieuDe.filter(function ($head) {
+                    return $head.Level == ($level + 1);
+                }).length > 0) {
+                    createHeaders($DanhSachTieuDe, ($level + 1), $thead)
+                }
+
+            }
+            //function createTable($data) {
+            //    var $table = document.createElement('table');
+            //    if ($data.AutoRow == false) {
+            //        $table.setAttribute('class', 'ctm-table ctm-unit');
+            //        $table.dataset.TableId = $data.IdBaoCao;
+            //        var $thead = document.createElement('thead');
+            //        var $headers = $data.headers;
+            //        if ($headers.length > 0) {
+            //            createHeaders($headers, 1, $thead)
+            //        }
+            //        $table.appendChild($thead);
+            //        if ($data.tableComponents.length > 0) {
+            //            createTableBody($data.tableComponents, $table);
+            //        }
+
+            //    } else {
+            //        $table.setAttribute('class', 'ctm-table');
+            //        $table.dataset.TableId = $data.IdBaoCao;
+            //        var $thead = document.createElement('thead');
+            //        var $headers = $data.headers;
+            //        $table.appendChild($thead);
+            //        createHeaderAuto($headers, 1, $thead)
+            //        createTableBodyAuto($headers,$data.IdBaoCao, $table, $thead)
+                    
+            //    }
+            //    return $table;
+            //}
+
+            //function createHeaderAuto($headers, $level, $thead) {
+            //    var $tr = document.createElement('tr');
+            //    if ($level == 1) {
+            //        $tr.innerHTML = '<th rowspan=' + (Math.max.apply(Math, $headers.map(function (o) { return o.Level; }))) + '></th>';
+            //    }
+            //    $headers.filter(function ($head) {
+            //        return $head.Level == $level;
+            //    }).forEach(function ($head) {
+            //        var $th = document.createElement('th');
+            //        if (!($head.Is_No == true || $head.Is_Component == true)) {
+            //            $th.dataset.edit = true;
+            //        }
+            //        $th.dataset.idth = $head.Id;
+            //        $th.colSpan = $head.ColSpan;
+            //        $th.rowSpan = $head.RowSpan;
+            //        $th.innerHTML = $head.Title;
+            //        $tr.appendChild($th);
+            //    });
+            //    $thead.appendChild($tr);
+            //    if ($headers.filter(function ($head) {
+            //        return $head.Level == ($level + 1);
+            //    }).length > 0) {
+            //        createHeaderAuto($headers, ($level + 1), $thead)
+            //    }
+            //}
+
+            //function createTableBodyAuto($headers,$IdBaoCao, $table, $thead) {
+            //    var $tbody = document.createElement('tbody');
+            //    JqueryPostData('/Report/GetTableReportAutoRow', { IdBaoCao: $IdBaoCao }, function (res) {
+                    
+            //        var $rowadd = document.createElement('tr');
+            //        var $head = $headers.filter(function ($item) {
+            //            return $item.ColSpan == 1
+            //        });
+            //        for (var i = 0; i < $head.length+1; i++) {
+            //            var $td = document.createElement('td');
+            //            if (i == 0) {
+            //                $td.innerHTML = '<div class="add-row hint--right" aria-label="Thêm dòng mới"><i class="fa fa-plus" aria-hidden="true"></i></div>';
+            //                $td.querySelector('.add-row').addEventListener('click', function () {
+            //                    addRowAuto($table, $IdBaoCao);
+            //                })
+            //            }
+            //            $rowadd.appendChild($td)
+            //        }
+            //        $tbody.appendChild($rowadd);
+            //        if (res.length > 0) {
+            //            res.forEach(function ($row) {
+            //                addRowDataAuto($row, $table);
+            //            })
+            //        }
+            //    })
+            //    $table.appendChild($tbody)
+            //}
+
+            //function addRowAuto($table, IdBaoCao) {
+            //    var tr = $table.rows[$table.rows.length - 1].cloneNode(true);
+            //    JqueryPostData('/Report/ThemMoiThanhPhanAuto', { IdBaoCao: IdBaoCao, RowId: $table.querySelectorAll('tbody tr').length }, function (res) {
+            //        if (res.success) {
+            //            addRowDataAuto(res.extend, $table);
+            //        }
+            //        else {
+            //            Alert(res.message, function () { })
+            //        }
+            //    })
+            //}
+            //function addRowDataAuto($data, $table) {
+            //    var tr = $table.rows[$table.rows.length - 1].cloneNode(true);
+            //    for (var i = 0; i < tr.cells.length; i++) {
+            //        var $td = tr.cells[i];
+            //        var $dataColumn = $data.headers[i-1];
+            //        if (i == 0) {
+            //            $td.innerHTML = '';
+            //            $td.dataset.dataRow = JSON.stringify($data);
+            //            var $removeRow = document.createElement('div');
+            //            $removeRow.setAttribute('class', 'remove-row hint--right');
+            //            $removeRow.setAttribute('aria-label', 'Xóa dòng');
+            //            $removeRow.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
+            //            $td.appendChild($removeRow);
+            //            $removeRow.addEventListener('click', function () {
+            //                var $this = this;
+            //                var $question = confirm("Bạn có muốn xóa không?");
+            //                if ($question == true) {
+            //                    var $dataGet = JSON.parse($this.closest('td').dataset.dataRow);
+            //                    var IdBaoCao = $table.dataset.TableId;
+            //                    JqueryPostData('/Report/XoaDuLieuBaoCaoUnitAuto', { RowId: $dataGet.RowId, IdBaoCao: IdBaoCao }, function (res) {
+            //                        if (res.success) {
+            //                            $this.closest('tr').remove();
+            //                        }
+            //                        else {
+            //                            Alert(res.message, function () { })
+            //                        }
+            //                    })
+            //                }
+            //            })
+            //        }
+            //        else {
+            //            $td.innerHTML = '';
+            //            $td.dataset.datasource = JSON.stringify($dataColumn);
+            //            $td.innerHTML = '<div class="display">' + ($dataColumn.TextValue) + '</div><div class="editbox"></div>';
+            //            var $input = document.createElement('input')
+                        
+            //            var $editbox = $td.querySelector('.editbox')
+            //            var $input = document.createElement('input');
+            //            $input.style.width = '100%';
+            //            $editbox.appendChild($input)
+            //            $td.addEventListener('dblclick', function () {
+            //                var $this = this;
+            //                var offsetWidth = $this.offsetWidth;
+            //                $this.style.width = offsetWidth + 'px';
+            //                $this.querySelector('.editbox').style.width = offsetWidth + 'px';
+            //                var $datasource = JSON.parse($this.dataset.datasource)
+            //                $this.querySelector('input').value = $datasource.TextValue;
+            //                $this.querySelector('.display').style.display = 'none';
+            //                $this.querySelector('.editbox').style.display = 'inline-flex';
+            //                $this.querySelector('input').focus();
+            //            })
+            //            $td.dataset.datasource = JSON.stringify($dataColumn);
+            //            $input.addEventListener('blur', function () {
+            //                var $this = this;
+            //                var $datasource = JSON.parse($this.closest('td').dataset.datasource);
+
+            //                if (!($datasource.TextValue == $this.value)) {
+            //                    JqueryPostData('/Report/CapNhatDataComponentAutoReportUnit', { RowHeaderId: $datasource.Id , TextValue: $this.value }, function ($resUpdate) {
+            //                        if ($resUpdate.success) {
+            //                            $this.closest('td').querySelector('.editbox').style.display = 'none';
+            //                            $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+            //                            $datasource.TextValue = $this.value;
+            //                            $this.closest('td').querySelector('.display').innerHTML = $datasource.TextValue;
+            //                            $this.closest('td').dataset.datasource = JSON.stringify($datasource);
+            //                            $this.closest('td').classList.add('data-save');
+            //                            $this.closest('td').classList.remove('data-notsave');
+            //                        }
+            //                        else {
+            //                            $this.value = $datasource.TextValue;
+            //                            Alert(res.message, function () { })
+            //                        }
+            //                    })
+            //                }
+            //                else {
+            //                    $this.closest('td').querySelector('.editbox').style.display = 'none';
+            //                    $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+            //                }
+
+            //            });
+            //            $input.onkeypress = function ($e) {
+            //                if ($e.keyCode == 13) {
+            //                    this.blur();
+            //                }
+            //                return true;
+            //            }
+            //            var stylecell = 'text-align:' + $dataColumn.TextAlign + ';';
+            //            if ($dataColumn.TextBold) {
+            //                stylecell += ' font-weight: bold;';
+            //            }
+            //            if ($dataColumn.TextUpper) {
+            //                stylecell += ' text-transform: uppercase;';
+            //            }
+            //            $td.querySelector('.display').setAttribute('style', stylecell)
+            //        }
+            //    }
+            //    tr.dataset.RowId = $data.RowId;
+            //    $table.rows[$table.rows.length - 1].parentNode.insertBefore(tr, $table.rows[$table.rows.length - 1]);
+            //}
+
+            //function createTableBody($data, $table) {
+            //    var $tbody = document.createElement('tbody');
+            //    $data.forEach(function ($row) {
+            //        var $tr = document.createElement('tr');
+            //        $row.headers.forEach(function ($dataColumn) {
+            //            var $td = document.createElement('td');
+            //            if ($dataColumn.Is_No == true || $dataColumn.Is_Component == true) {
+            //                $td.innerHTML = $dataColumn.TextValue;
+            //                $td.setAttribute('class', 'not-edit');
+            //            }
+            //            else {
+            //                var $header = $table.querySelector('thead th[data-idth="' + ($dataColumn.HeaderId) + '"]');
+            //                var offsetWidth = 0;
+            //                if ($header) {
+            //                    offsetWidth = $header.offsetWidth;
+            //                }
+            //                $td.innerHTML = '<div class="display">' + ($dataColumn.TextUnit) + '</div><div class="editbox"></div>';
+            //                var $editbox = $td.querySelector('.editbox')
+            //                var $input = document.createElement('input');
+
+            //                if ($dataColumn.TypeValue == 1) {
+            //                    $input.type = 'text';
+            //                }
+            //                if ($dataColumn.TypeValue == 2 || $dataColumn.TypeValue == 3) {
+            //                    $input.type = 'number';
+            //                }
+            //                if ($dataColumn.Save == true) {
+            //                    $td.classList.add('data-save');
+            //                }
+            //                if ($dataColumn.Save == false) {
+            //                    $td.classList.add('data-notsave');
+            //                }
+            //                $editbox.appendChild($input)
+            //                $td.addEventListener('dblclick', function () {
+            //                    var $this = this;
+            //                    var $datasource = JSON.parse($this.dataset.datasource)
+            //                    $this.querySelector('input').value = $datasource.TextUnit;
+            //                    $this.querySelector('.display').style.display = 'none';
+            //                    $this.querySelector('.editbox').style.display = 'inline-flex';
+            //                    $this.querySelector('input').focus();
+            //                })
+            //                $td.dataset.datasource = JSON.stringify($dataColumn);
+            //                $input.addEventListener('blur', function () {
+            //                    var $this = this;
+            //                    var $datasource = JSON.parse($this.closest('td').dataset.datasource);
+
+            //                    if (!($datasource.TextUnit == $this.value)) {
+            //                        JqueryPostData('/Report/CapNhatDataComponentReportUnit', { IdComponent: $dataColumn.Id, TextValue: $this.value }, function ($resUpdate) {
+            //                            if ($resUpdate.success) {
+            //                                $this.closest('td').querySelector('.editbox').style.display = 'none';
+            //                                $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+            //                                $datasource.TextUnit = $this.value;
+            //                                $this.closest('td').querySelector('.display').innerHTML = $datasource.TextUnit;
+            //                                $this.closest('td').dataset.datasource = JSON.stringify($datasource);
+            //                                $this.closest('td').classList.add('data-save');
+            //                                $this.closest('td').classList.remove('data-notsave');
+            //                            }
+            //                            else {
+            //                                $this.value = $datasource.TextUnit;
+            //                                Alert(res.message, function () { })
+            //                            }
+            //                        })
+            //                    }
+            //                    else {
+            //                        $this.closest('td').querySelector('.editbox').style.display = 'none';
+            //                        $this.closest('td').querySelector('.display').style.display = 'inline-flex';
+            //                    }
+
+            //                });
+            //                $input.onkeypress = function ($e) {
+            //                    if ($e.keyCode == 13) {
+            //                        this.blur();
+            //                    }
+            //                    return true;
+            //                }
+            //                if (offsetWidth > 0) {
+            //                    $td.style.width = offsetWidth + 'px';
+            //                }
+                            
+            //            }
+            //            var stylecell = 'text-align:' + $dataColumn.TextAlign + ';';
+            //            if ($dataColumn.TextBold) {
+            //                stylecell += ' font-weight: bold;';
+            //            }
+            //            if ($dataColumn.TextUpper) {
+            //                stylecell += ' text-transform: uppercase;';
+            //            }
+            //            $td.setAttribute('style', stylecell)
+            //            $tr.appendChild($td)
+            //        });
+
+            //        $tbody.appendChild($tr);
+            //    });
+            //    $table.appendChild($tbody);
+            //}
+
+            //function createHeaders($headers, $level, $thead) {
+            //    var $tr = document.createElement('tr');
+            //    $headers.filter(function ($head) {
+            //        return $head.Level == $level;
+            //    }).forEach(function ($head) {
+            //        var $th = document.createElement('th');
+            //        if (!($head.Is_No == true || $head.Is_Component == true)) {
+            //            $th.dataset.edit = true;
+            //        }
+            //        $th.dataset.idth = $head.Id;
+            //        $th.colSpan = $head.ColSpan;
+            //        $th.rowSpan = $head.RowSpan;
+            //        $th.innerHTML = $head.Title;
+            //        $tr.appendChild($th);
+            //    });
+            //    $thead.appendChild($tr);
+            //    if ($headers.filter(function ($head) {
+            //        return $head.Level == ($level + 1);
+            //    }).length > 0) {
+            //        createHeaders($headers, ($level + 1), $thead)
+            //    }
+            //}
+        </script>
+    }
+
+}
+

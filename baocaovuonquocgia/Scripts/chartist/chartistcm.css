@@ -1,0 +1,16 @@
+﻿.ct-chart {
+    position: relative;
+}
+.ct-series .ct-bar {
+    stroke-width: 15px;
+}
+.ct-series-a .ct-line, .ct-series-a .ct-bar, .ct-series-a .ct-point {
+    stroke: #82b2f9;
+}
+.ct-series-a .ct-area, .ct-series-a .ct-slice-donut-solid, .ct-series-a .ct-slice-pie, .ct-series-a .ct-bar {
+    fill: #82b2f9;
+}
+.ct-label {
+    font-size: 1.5rem;
+    color: #5A5A5A;
+}

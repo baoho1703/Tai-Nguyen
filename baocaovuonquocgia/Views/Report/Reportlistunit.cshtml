@@ -1,0 +1,335 @@
+﻿@model baocaovuonquocgia.Models.ControllerTab
+@{
+    ViewBag.Title = "Reportlistunit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Danh sách báo cáo</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.Tab == 1)
+            {
+                @Html.Partial("~/Views/Report/Reportlistunit/DanhSach.cshtml")
+            }
+            @if (Model.Tab == 2)
+            {
+                @Html.Partial("~/Views/Report/Reportlistunit/ChiTiet.cshtml", Model)
+            }
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var tableBaoCao;
+        var $dataBySelect;
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var Tab =@Model.Tab;
+            if (Tab == 1) {
+                tableBaoCao = $('#tableBaoCao').dataTable({
+                    ajax: '/Report/GetPreciousTable',
+                    processing: true,
+                    serverSide: true,
+                    width: 'auto',
+                    bSort: false,
+                    bDestroy: true,
+                    responsive: true,
+                    columns: [
+                        {
+                            data: 'id',
+                            class: 'text-center column-80',
+                        },
+                        {
+                            data: 'precious_name'
+                        },
+                        {
+                            data: 'startend'
+                        },
+                        {
+                            data: 'completedate'
+                        },
+                        {
+                            data: 'id',
+                            mRender: function (data, type, row) {
+                                var rt = '';
+                                rt = '<a class="hint--top x-chinhsua" style="cursor: pointer;" aria-label="Hiện thị báo cáo"><i class="fa fa-eye"></i></a>';
+                                
+                                return rt;
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0,
+                    }],
+                    "order": [[1, 'asc']],
+                    responsive: true,
+                    searching: true,
+                    bLengthChange: false,
+                    iDisplayLength: 10,
+                    drawCallback: function (oSettings) {
+
+                    },
+                    fnCreatedRow: function (row, data, index) {
+                        var page = this.api().page();
+                        var len = this.api().page.len();
+                        $('td', row).eq(0).html((page * len) + (index + 1));
+                        if ($('td', row).eq(4)[0].querySelector('.x-chinhsua')) {
+                            $('td', row).eq(4)[0].querySelector('.x-chinhsua').addEventListener('click', function () {
+                                ChuyenTab("ChuyenTabChiTiet", data.id);
+                            });
+                        }
+                        //if ($('td', row).eq(3)[0].querySelector('select')) {
+                        //    $('td', row).eq(3)[0].querySelector('select').addEventListener('change', function () {
+                        //        var AccountId = this.options[this.selectedIndex].value;
+                        //        JqueryPostData('/Category/CapNhatNguoiQuanLy', { UnitId: data.id, AccountId: AccountId }, function (res) {
+                        //            Alert(res.message, function () {
+                        //                if (res.success) {
+                        //                    $tableDonVi.api().ajax.reload(null, false)
+                        //                }
+                        //            })
+                        //        })
+                        //    });
+                        //}
+                    },
+                    language: {
+                        lengthMenu: "Lọc theo _MENU_",
+                        zeroRecords: "Không có dòng nào",
+                        info: "Tổng cộng _TOTAL_ dòng",
+                        emptyTable: "Không có dữ liệu nào trong bảng",
+                        infoEmpty: "Không có dòng nào",
+                        loadingRecords: "Tải dữ liệu...",
+                        processing: '<div class="nloading"></div>',
+                        search: "Tìm kiếm:",
+                        searchPlaceholder: "Tìm kiếm theo nội dung ...",
+                        paginate: {
+                            first: "Đầu",
+                            last: "Cuối",
+                            next: "Tiếp",
+                            previous: "Trước"
+                        }
+                    }
+                });
+            }
+            if (Tab == 2) {
+                loadReport();
+                document.getElementById('btn_taibaocao').addEventListener('click', function () {
+                    if ($dataBySelect != undefined) {
+                        JqueryPostData('/Home/GetThongTinUnit', {}, function (res) {
+
+                            var $all = document.createElement('div');
+                            $all.innerHTML = res.Vesion.datatext;
+                            var $data = res;
+                            $data.tendiachi = $all.querySelector('tr > td > .display-pro .data-dynamic').innerHTML;
+                            $data.loaihang = $all.querySelector('table table tbody tr:nth-child(2) td:nth-child(2) .display-pro').innerHTML;
+                            $data.loaihangghichu = $all.querySelector('table table tbody tr:nth-child(2) td:nth-child(3) .display-pro').innerHTML;
+                            $data.vitrighichu = $all.querySelector('table table tbody tr:nth-child(3) td:nth-child(3) .display-pro').innerHTML;
+                            $data.ngaythanhlapghichu = $all.querySelector('table table tbody tr:nth-child(4) td:nth-child(3) .display-pro').innerHTML;
+                            $data.cacdonviql = $all.querySelector('table table tbody tr:nth-child(5) td:nth-child(2) .display-pro').innerHTML;
+                            $data.cacdonviqlghichu = $all.querySelector('table table tbody tr:nth-child(5) td:nth-child(3) .display-pro').innerHTML;
+                            $data.nhiemvuchinh1 = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(2) .display-pro').innerHTML;
+                            $data.nhiemvuchinh2 = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(3) .display-pro').innerHTML;
+                            $data.nhiemvuchinhghichu = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(4) .display-pro').innerHTML;
+                            $data.cacchuongtrinhlq = $all.querySelector('table table tbody tr:nth-child(10) td:nth-child(2) .display-pro').innerHTML;
+                            $data.cacchuongtrinhlqghichu = $all.querySelector('table table tbody tr:nth-child(10) td:nth-child(3) .display-pro').innerHTML;
+                            $data.dautukhac = $all.querySelector('table table tbody tr:nth-child(8) td:nth-child(4) .display-pro').innerHTML;
+                            $data.dientichghichu = $all.querySelector('table table tbody tr:nth-child(6) td:nth-child(4) .display-pro').innerHTML;
+                            $data.tongcanboghichu = $all.querySelector('table table tbody tr:nth-child(7) td:nth-child(4) .display-pro').innerHTML;
+                            if (res.ngaythanhlap == null) {
+                                $data.ngaythanhlap = '';
+                            }
+                            ExportTableReportData(false, false, null, $dataBySelect,$data);
+                        })
+                        
+                    }
+                })
+            }
+        })
+        function loadReport() {
+            var $ulbaocao = document.getElementById('list-baocao');
+            $ulbaocao.innerHTML = null;
+            var IdPrecious=@Model.IdChinhSua;
+            JqueryPostData('/Report/GetDanhSachBaoCaoUnit', { IdPrecious: IdPrecious}, function (res) {
+                $dataBySelect = res;
+                if (res.length > 0) {
+                    res.forEach(function ($baocao) {
+                        var $liBaocao = document.createElement('li');
+                        var $divTitle = document.createElement('div');
+                        $divTitle.setAttribute('class', 'login-session');
+                        $divTitle.innerText = $baocao.TieuDe;
+                        var $btnShow = document.createElement('button');
+                        $btnShow.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnShow.setAttribute('aria-label', "Hiện thị biểu mẫu");
+                        $btnShow.innerHTML = '<i class="fa fa-eye"></i>';
+                        $btnShow.setAttribute('style', 'right: 50px;');
+                        $divTitle.appendChild($btnShow);
+                        var $btnDownExcel = document.createElement('button');
+                        $btnDownExcel.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnDownExcel.setAttribute('aria-label', "Tải dữ liệu Excel");
+                        $btnDownExcel.innerHTML = '<i class="fa fa-file-excel-o" aria-hidden="true"></i>';
+                        $btnDownExcel.setAttribute('style', 'right: 100px;');
+                        $divTitle.appendChild($btnDownExcel);
+
+                        var $btnDownPrint = document.createElement('button');
+                        $btnDownPrint.setAttribute('class', 'btn btn-link btn-logout hint--top');
+                        $btnDownPrint.setAttribute('aria-label', "In dữ liệu");
+                        $btnDownPrint.innerHTML = '<i class="fa fa-print" aria-hidden="true"></i>';
+                        $btnDownPrint.setAttribute('style', 'right: 150px;');
+                        $divTitle.appendChild($btnDownPrint);
+
+                        $liBaocao.appendChild($divTitle);
+                        var $divboundtable = document.createElement('div');
+                        $divboundtable.setAttribute('class', 'ctm-table-bound');
+                        $divboundtable.setAttribute('style', 'display:none;width: 100%;');
+                        $divboundtable.appendChild(createTable($baocao));
+                        
+                        $liBaocao.appendChild($divboundtable);
+                        $btnShow.addEventListener('click', function () {
+                            var $table = this.closest('li').querySelector('.ctm-table-bound');
+                            if ($table.style.display == 'none') {
+                                this.closest('.login-session').classList.add('view-log')
+                                $table.style.display = 'inline-block'
+                            }
+                            else {
+                                this.closest('.login-session').classList.remove('view-log')
+                                $table.style.display = 'none'
+                            }
+                        });
+                        $btnDownExcel.addEventListener('click', function () {
+                            ExportTableReportData(false, true, $baocao, null);
+                        });
+
+                        $btnDownPrint.addEventListener('click', function () {
+                            var printContents = $divboundtable.cloneNode(true);
+                            document.getElementById('wrapper').style.display = 'none';
+                            printContents.style.display = 'block';
+                            document.body.appendChild(printContents);
+                            window.print();
+                            document.getElementById('wrapper').style.display = 'block';
+                            printContents.remove();
+                        });
+                        $ulbaocao.appendChild($liBaocao)
+                    });
+                }
+            })
+        }
+
+        function createTable($data) {
+            var $table = document.createElement('table');
+            $table.setAttribute('class', 'ctm-table ctm-unit-view');
+            var $thead = document.createElement('thead');
+            var $DanhSachTieuDe = $data.DanhSachTieuDe;
+            if ($DanhSachTieuDe.length > 0) {
+                createHeaders($DanhSachTieuDe, 1, $thead)
+            }
+            $table.appendChild($thead);
+            var $tbody = document.createElement('tbody');
+            var $DanhSachDong = $data.DanhSachDong;
+            if ($DanhSachDong.length > 0) {
+                createTbody($DanhSachDong, $data, $tbody)
+            }
+            $table.appendChild($tbody);
+            return $table;
+        }
+        function createTbody($DanhSachDong, $dataTable, $tbody) {
+            $DanhSachDong.forEach(function ($dong) {
+                var $tr = document.createElement('tr');
+                var $DanhSachCot = $dong.DanhSachCot;
+                if ($DanhSachCot.length > 0) {
+                    $DanhSachCot.forEach(function ($cot) {
+                        var $td = document.createElement('td');
+                        if ($cot.TieuDeCot.IsNo == true || $cot.TieuDeCot.IsComponent == true) {
+                            $td.setAttribute('class', 'not-edit');
+                            $td.innerHTML = $cot.DuLieuText;
+                        }
+                        else {
+                            if ($dataTable.Loai == 0) {
+                                var $display = document.createElement('div');
+                                $display.setAttribute('class', 'display');
+                                if ($cot.TypeValue == 1) {
+                                    $display.innerHTML = $cot.DuLieuText;
+                                }
+                                else {
+                                    $display.innerHTML = $cot.TongNumber;
+                                }
+                                $td.appendChild($display);
+                            }
+                            else {
+                                var $display = document.createElement('div');
+                                $display.setAttribute('class', 'display');
+                                $display.innerHTML = $cot.DuLieuText;
+                                $td.appendChild($display);
+                            }
+                            var stylecell = 'text-align:' + $cot.TieuDeCot.TextAlignValue + ';';
+                            if ($cot.TieuDeCot.TextBoldValue) {
+                                stylecell += ' font-weight: bold;';
+                            }
+                            if ($cot.TieuDeCot.TextUpperValue) {
+                                stylecell += ' text-transform: uppercase;';
+                            }
+                            $td.setAttribute('style', stylecell)
+                        }
+                        $tr.appendChild($td);
+                    });
+                }
+                $tbody.appendChild($tr)
+            });
+        }
+        function createHeaders($DanhSachTieuDe, $level, $thead) {
+            
+            var $tr = document.createElement('tr');
+            $DanhSachTieuDe.filter(function ($head) {
+                return $head.Level == $level;
+            }).forEach(function ($head) {
+                var $th = document.createElement('th');
+                if (!($head.IsNo == true || $head.IsComponent == true)) {
+                    $th.dataset.edit = true;
+                }
+                $th.dataset.idth = $head.Id;
+                $th.dataset.idHeaderCha = $head.HeaderId;
+                $th.colSpan = $head.ColSpan;
+                $th.rowSpan = $head.RowSpan;
+                $th.innerHTML = $head.TieuDe;
+                $tr.appendChild($th);
+            });
+            $thead.appendChild($tr);
+            if ($DanhSachTieuDe.filter(function ($head) {
+                return $head.Level == ($level + 1);
+            }).length > 0) {
+                createHeaders($DanhSachTieuDe, ($level + 1), $thead)
+            }
+            
+        }
+        
+        function ChuyenTab(nameForm, IdChinhSua) {
+            var $form = document.createElement('form');
+            var $inputTab = document.createElement('input');
+            $inputTab.type = 'hidden';
+            $inputTab.name = 'tab';
+            switch (nameForm) {
+                case 'ChuyenTabDanhSach':
+                    $inputTab.value = 1;
+                    break;
+                    break;
+                case 'ChuyenTabChiTiet':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 2;
+                    break;
+            }
+
+            $form.action = '/report/reportlistunit';
+            $form.method = 'POST';
+            $form.appendChild($inputTab);
+            document.body.appendChild($form);
+            $form.submit();
+        }
+    </script>
+}
+

@@ -1,0 +1,434 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="tongcuclamnghiepModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="m_account">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="username" Type="varchar" MaxLength="50" />
+    <Property Name="password" Type="varchar" MaxLength="50" />
+    <Property Name="fullname" Type="nvarchar" MaxLength="100" />
+    <Property Name="gender" Type="bit" />
+    <Property Name="email" Type="varchar" MaxLength="200" />
+    <Property Name="status" Type="bit" />
+    <Property Name="role_id" Type="int" />
+    <Property Name="createdate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="m_component">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="componentname" Type="nvarchar" MaxLength="4000" />
+    <Property Name="status" Type="bit" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="orderrow" Type="int" />
+    <Property Name="header_id" Type="int" />
+    <Property Name="reporttable_id" Type="int" />
+    <Property Name="typevalue" Type="int" />
+  </EntityType>
+  <EntityType Name="m_controller">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="controllername" Type="varchar" MaxLength="50" />
+    <Property Name="controllerurl" Type="varchar" MaxLength="500" />
+    <Property Name="order" Type="int" />
+    <Property Name="level" Type="int" />
+    <Property Name="status" Type="bit" />
+    <Property Name="controllerdisplay" Type="nvarchar" MaxLength="50" />
+    <Property Name="controller_id" Type="int" />
+  </EntityType>
+  <EntityType Name="m_controller_role">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="controller_id" Type="int" />
+    <Property Name="role_id" Type="int" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="status" Type="bit" />
+  </EntityType>
+  <EntityType Name="m_header">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="headername" Type="nvarchar" MaxLength="200" />
+    <Property Name="colspan" Type="int" />
+    <Property Name="rowspan" Type="int" />
+    <Property Name="level" Type="int" />
+    <Property Name="order" Type="int" />
+    <Property Name="reporttable_id" Type="int" />
+    <Property Name="status" Type="bit" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="header_id" Type="int" />
+    <Property Name="is_bold" Type="bit" />
+    <Property Name="is_upper" Type="bit" />
+    <Property Name="is_valuebold" Type="bit" />
+    <Property Name="is_valueupper" Type="bit" />
+    <Property Name="valuetextalign" Type="varchar" MaxLength="50" />
+    <Property Name="is_no" Type="bit" />
+    <Property Name="is_component" Type="bit" />
+  </EntityType>
+  <EntityType Name="m_precious">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="precious_name" Type="nvarchar" MaxLength="100" />
+    <Property Name="startdate" Type="datetime" />
+    <Property Name="enddate" Type="datetime" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="completedate" Type="datetime" />
+    <Property Name="account_id" Type="int" />
+    <Property Name="status" Type="bit" />
+    <Property Name="slowday" Type="datetime" />
+  </EntityType>
+  <EntityType Name="m_reporttable">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="title" Type="nvarchar" MaxLength="4000" />
+    <Property Name="order" Type="int" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="status" Type="bit" />
+    <Property Name="showtotal" Type="bit" />
+    <Property Name="autorow" Type="bit" />
+  </EntityType>
+  <EntityType Name="m_role">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="rolename" Type="nvarchar" MaxLength="50" />
+    <Property Name="status" Type="bit" />
+  </EntityType>
+  <EntityType Name="m_unit">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="unitname" Type="nvarchar" MaxLength="4000" />
+    <Property Name="address" Type="nvarchar" MaxLength="4000" />
+    <Property Name="status" Type="bit" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="account_id" Type="int" />
+    <Property Name="ngansachnhannuoc1" Type="float" />
+    <Property Name="ngansachnhanuoc2" Type="float" />
+    <Property Name="tongcanbo1" Type="int" />
+    <Property Name="tongcanbo2" Type="int" />
+    <Property Name="dientich1" Type="float" />
+    <Property Name="dientich2" Type="float" />
+    <Property Name="ngaythanhlap" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="m_unit_datareport">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="unit_precious_id" Type="int" />
+    <Property Name="component_id" Type="int" />
+    <Property Name="data_text" Type="nvarchar" MaxLength="4000" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="editlasttime" Type="datetime" />
+  </EntityType>
+  <EntityType Name="m_unit_datereport_autorows">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="orderrow" Type="int" />
+    <Property Name="datatext" Type="nvarchar" MaxLength="4000" />
+    <Property Name="header_id" Type="int" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="editdate" Type="datetime" />
+    <Property Name="unit_precious_id" Type="int" />
+    <Property Name="reporttable_id" Type="int" />
+  </EntityType>
+  <EntityType Name="m_unit_precious">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="unit_id" Type="int" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="completedate" Type="datetime" />
+    <Property Name="precious_id" Type="int" />
+  </EntityType>
+  <EntityType Name="m_unitversion">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="unit_id" Type="int" />
+    <Property Name="datatext" Type="nvarchar(max)" />
+    <Property Name="version" Type="int" />
+    <Property Name="status" Type="bit" />
+    <Property Name="createdate" Type="datetime" />
+    <Property Name="ngansachnhannuoc1" Type="float" />
+    <Property Name="ngansachnhanuoc2" Type="float" />
+    <Property Name="tongcanbo1" Type="int" />
+    <Property Name="tongcanbo2" Type="int" />
+    <Property Name="dientich1" Type="float" />
+    <Property Name="dientich2" Type="float" />
+    <Property Name="ngaythanhlap" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <Association Name="FK_m_account_m_role">
+    <End Role="m_role" Type="Self.m_role" Multiplicity="0..1" />
+    <End Role="m_account" Type="Self.m_account" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_role">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_account">
+        <PropertyRef Name="role_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_component_m_header">
+    <End Role="m_header" Type="Self.m_header" Multiplicity="0..1" />
+    <End Role="m_component" Type="Self.m_component" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_header">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_component">
+        <PropertyRef Name="header_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_component_m_reporttable">
+    <End Role="m_reporttable" Type="Self.m_reporttable" Multiplicity="0..1" />
+    <End Role="m_component" Type="Self.m_component" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_reporttable">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_component">
+        <PropertyRef Name="reporttable_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_controller_role_m_controller">
+    <End Role="m_controller" Type="Self.m_controller" Multiplicity="0..1" />
+    <End Role="m_controller_role" Type="Self.m_controller_role" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_controller">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_controller_role">
+        <PropertyRef Name="controller_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_controller_role_m_role">
+    <End Role="m_role" Type="Self.m_role" Multiplicity="0..1" />
+    <End Role="m_controller_role" Type="Self.m_controller_role" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_role">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_controller_role">
+        <PropertyRef Name="role_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_header_m_reporttable">
+    <End Role="m_reporttable" Type="Self.m_reporttable" Multiplicity="0..1" />
+    <End Role="m_header" Type="Self.m_header" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_reporttable">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_header">
+        <PropertyRef Name="reporttable_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_precious_m_account">
+    <End Role="m_account" Type="Self.m_account" Multiplicity="0..1" />
+    <End Role="m_precious" Type="Self.m_precious" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_account">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_precious">
+        <PropertyRef Name="account_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_datareport_m_component">
+    <End Role="m_component" Type="Self.m_component" Multiplicity="0..1" />
+    <End Role="m_unit_datareport" Type="Self.m_unit_datareport" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_component">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit_datareport">
+        <PropertyRef Name="component_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_datareport_m_unit_precious">
+    <End Role="m_unit_precious" Type="Self.m_unit_precious" Multiplicity="0..1" />
+    <End Role="m_unit_datareport" Type="Self.m_unit_datareport" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_unit_precious">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit_datareport">
+        <PropertyRef Name="unit_precious_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_datereport_autorows_m_header">
+    <End Role="m_header" Type="Self.m_header" Multiplicity="0..1" />
+    <End Role="m_unit_datereport_autorows" Type="Self.m_unit_datereport_autorows" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_header">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit_datereport_autorows">
+        <PropertyRef Name="header_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_datereport_autorows_m_unit_precious">
+    <End Role="m_unit_precious" Type="Self.m_unit_precious" Multiplicity="0..1" />
+    <End Role="m_unit_datereport_autorows" Type="Self.m_unit_datereport_autorows" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_unit_precious">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit_datereport_autorows">
+        <PropertyRef Name="unit_precious_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_m_account">
+    <End Role="m_account" Type="Self.m_account" Multiplicity="0..1" />
+    <End Role="m_unit" Type="Self.m_unit" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_account">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit">
+        <PropertyRef Name="account_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_precious_m_precious">
+    <End Role="m_precious" Type="Self.m_precious" Multiplicity="0..1" />
+    <End Role="m_unit_precious" Type="Self.m_unit_precious" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_precious">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit_precious">
+        <PropertyRef Name="precious_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unit_precious_m_unit">
+    <End Role="m_unit" Type="Self.m_unit" Multiplicity="0..1" />
+    <End Role="m_unit_precious" Type="Self.m_unit_precious" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_unit">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unit_precious">
+        <PropertyRef Name="unit_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_m_unitversion_m_unit">
+    <End Role="m_unit" Type="Self.m_unit" Multiplicity="0..1" />
+    <End Role="m_unitversion" Type="Self.m_unitversion" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="m_unit">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="m_unitversion">
+        <PropertyRef Name="unit_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="tongcuclamnghiepModelStoreContainer">
+    <EntitySet Name="m_account" EntityType="Self.m_account" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_component" EntityType="Self.m_component" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_controller" EntityType="Self.m_controller" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_controller_role" EntityType="Self.m_controller_role" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_header" EntityType="Self.m_header" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_precious" EntityType="Self.m_precious" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_reporttable" EntityType="Self.m_reporttable" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_role" EntityType="Self.m_role" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_unit" EntityType="Self.m_unit" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_unit_datareport" EntityType="Self.m_unit_datareport" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_unit_datereport_autorows" EntityType="Self.m_unit_datereport_autorows" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_unit_precious" EntityType="Self.m_unit_precious" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_unitversion" EntityType="Self.m_unitversion" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_m_account_m_role" Association="Self.FK_m_account_m_role">
+      <End Role="m_role" EntitySet="m_role" />
+      <End Role="m_account" EntitySet="m_account" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_component_m_header" Association="Self.FK_m_component_m_header">
+      <End Role="m_header" EntitySet="m_header" />
+      <End Role="m_component" EntitySet="m_component" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_component_m_reporttable" Association="Self.FK_m_component_m_reporttable">
+      <End Role="m_reporttable" EntitySet="m_reporttable" />
+      <End Role="m_component" EntitySet="m_component" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_controller_role_m_controller" Association="Self.FK_m_controller_role_m_controller">
+      <End Role="m_controller" EntitySet="m_controller" />
+      <End Role="m_controller_role" EntitySet="m_controller_role" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_controller_role_m_role" Association="Self.FK_m_controller_role_m_role">
+      <End Role="m_role" EntitySet="m_role" />
+      <End Role="m_controller_role" EntitySet="m_controller_role" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_header_m_reporttable" Association="Self.FK_m_header_m_reporttable">
+      <End Role="m_reporttable" EntitySet="m_reporttable" />
+      <End Role="m_header" EntitySet="m_header" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_precious_m_account" Association="Self.FK_m_precious_m_account">
+      <End Role="m_account" EntitySet="m_account" />
+      <End Role="m_precious" EntitySet="m_precious" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_datareport_m_component" Association="Self.FK_m_unit_datareport_m_component">
+      <End Role="m_component" EntitySet="m_component" />
+      <End Role="m_unit_datareport" EntitySet="m_unit_datareport" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_datareport_m_unit_precious" Association="Self.FK_m_unit_datareport_m_unit_precious">
+      <End Role="m_unit_precious" EntitySet="m_unit_precious" />
+      <End Role="m_unit_datareport" EntitySet="m_unit_datareport" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_datereport_autorows_m_header" Association="Self.FK_m_unit_datereport_autorows_m_header">
+      <End Role="m_header" EntitySet="m_header" />
+      <End Role="m_unit_datereport_autorows" EntitySet="m_unit_datereport_autorows" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_datereport_autorows_m_unit_precious" Association="Self.FK_m_unit_datereport_autorows_m_unit_precious">
+      <End Role="m_unit_precious" EntitySet="m_unit_precious" />
+      <End Role="m_unit_datereport_autorows" EntitySet="m_unit_datereport_autorows" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_m_account" Association="Self.FK_m_unit_m_account">
+      <End Role="m_account" EntitySet="m_account" />
+      <End Role="m_unit" EntitySet="m_unit" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_precious_m_precious" Association="Self.FK_m_unit_precious_m_precious">
+      <End Role="m_precious" EntitySet="m_precious" />
+      <End Role="m_unit_precious" EntitySet="m_unit_precious" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unit_precious_m_unit" Association="Self.FK_m_unit_precious_m_unit">
+      <End Role="m_unit" EntitySet="m_unit" />
+      <End Role="m_unit_precious" EntitySet="m_unit_precious" />
+    </AssociationSet>
+    <AssociationSet Name="FK_m_unitversion_m_unit" Association="Self.FK_m_unitversion_m_unit">
+      <End Role="m_unit" EntitySet="m_unit" />
+      <End Role="m_unitversion" EntitySet="m_unitversion" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

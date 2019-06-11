@@ -1,0 +1,220 @@
+﻿@using baocaovuonquocgia.App_Data
+@model baocaovuonquocgia.Models.ControllerTab
+
+@{
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var _ReportTable = tongcuclamnghiep.m_reporttable.Where(a => a.id == Model.IdChinhSua).FirstOrDefault();
+}
+<ul class="nav nav-tabs nav-tabs-colored">
+    <li><a onclick="ChuyenTab('ChuyenTabDanhSach')">Danh sách</a></li>
+    <li class="active"><a>Tiêu đề cột báo cáo</a></li>
+</ul>
+<div class="tab-content tab-content-colored">
+    <div class="tab-pane fade in active">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="treeThanhPhanHeader" class="sampletree">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel-custom">
+                    <form novalidate id="form_ChiTietCongTacChiTiet">
+                        <input type="hidden" id="hdHeaderId" />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="txt_tenhienthi">Tên <required> * </required></label>
+                                    <input type="text" id="txt_tenhienthi" name="txt_tenhienthi" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [1,500] }])">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Cài đặt</label>
+                                    <br>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbRowBold">
+                                        <span>Chữ in đậm</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbUpper">
+                                        <span>Viết hoa</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbValueBold">
+                                        <span>Giá trị in đậm</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbValueUpper">
+                                        <span>Giá trị in hoa</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbSTT">
+                                        <span>Cột thứ tự</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbComponent">
+                                        <span>Cột thành phần</span>
+                                    </label>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="cbStatus">
+                                        <span>Hiển thị</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Căn lề giá trị</label>
+                                    <br>
+                                    <label class="fancy-radio">
+                                        <input type="radio" name="textalign" value="left">
+                                        <span><i></i>Left</span>
+                                    </label>
+                                    <label class="fancy-radio">
+                                        <input type="radio" name="textalign" value="center">
+                                        <span><i></i>Center</span>
+                                    </label>
+                                    <label class="fancy-radio">
+                                        <input type="radio" name="textalign" value="right">
+                                        <span><i></i>Right</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txt_colspan">Gộp số cột <required> * </required></label>
+                                    <input type="number" id="txt_colspan" name="txt_colspan" class="form-control" onkeyup="ElementValidation(this, [{ name: 'integer' }])">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txt_rowspan">Gộp số dòng <required> * </required></label>
+                                    <input type="number" id="txt_rowspan" name="txt_rowspan" class="form-control" onkeyup="ElementValidation(this, [{ name: 'integer' }])">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary float-right" id="btn_Capnhat">Cập nhật</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="fancy-checkbox">
+                                    <input type="checkbox" name="cbThemCon">
+                                    <span>Thêm mới cột chia</span>
+                                    <form id="formThemMoiCongTacCon">
+                                        <hr />
+                                        <h4>Thêm mới cột chia</h4>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txt_tenhienthi_Them">Tên <required> * </required></label>
+                                                    <input type="text" id="txt_tenhienthi_Them" name="txt_tenhienthi_Them" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [1,500] }])">
+                                                    <label class="parsley-required"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Cài đặt</label>
+                                                    <br>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbRowBold_Them">
+                                                        <span>Chữ in đậm</span>
+                                                    </label>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbUpper_Them">
+                                                        <span>Viết hoa</span>
+                                                    </label>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbValueBold_Them">
+                                                        <span>Giá trị in đậm</span>
+                                                    </label>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbValueUpper_Them">
+                                                        <span>Giá trị in hoa</span>
+                                                    </label>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbSTT_Them">
+                                                        <span>Cột thứ tự</span>
+                                                    </label>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbComponent_Them">
+                                                        <span>Cột thành phần</span>
+                                                    </label>
+                                                    <label class="fancy-checkbox">
+                                                        <input type="checkbox" name="cbStatus_Them">
+                                                        <span>Hiển thị</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Căn lề giá trị</label>
+                                                    <br>
+                                                    <label class="fancy-radio">
+                                                        <input type="radio" name="textalign_Them" value="left">
+                                                        <span><i></i>Left</span>
+                                                    </label>
+                                                    <label class="fancy-radio">
+                                                        <input type="radio" name="textalign_Them" value="center">
+                                                        <span><i></i>Center</span>
+                                                    </label>
+                                                    <label class="fancy-radio">
+                                                        <input type="radio" name="textalign_Them" value="right">
+                                                        <span><i></i>Right</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="txt_colspan_Them">Gộp số cột <required> * </required></label>
+                                                    <input type="number" id="txt_colspan_Them" name="txt_colspan_Them" class="form-control" onkeyup="ElementValidation(this, [{ name: 'integer' }])">
+                                                    <label class="parsley-required"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="txt_rowspan_Them">Gộp số dòng <required> * </required></label>
+                                                    <input type="number" id="txt_rowspan_Them" name="txt_rowspan_Them" class="form-control" onkeyup="ElementValidation(this, [{ name: 'integer' }])">
+                                                    <label class="parsley-required"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <button type="button" class="btn btn-primary float-right" id="btn_Them">Thêm mới</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

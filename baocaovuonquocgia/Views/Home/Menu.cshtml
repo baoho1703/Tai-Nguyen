@@ -1,0 +1,40 @@
+﻿@using baocaovuonquocgia.Models
+@using baocaovuonquocgia.App_Data
+<nav id="left-sidebar-nav" class="sidebar-nav">
+    <ul id="main-menu" class="metismenu">
+        @{
+            tongcuclamnghiepEntities tongcuclamnghiep  = new tongcuclamnghiepEntities();
+            AccountCookie account = (AccountCookie)Session["AccountCookie"];
+            List<MenuTop> menus = new List<MenuTop>();
+            string controllerName = ViewContext.RouteData.Values["controller"].ToString();
+            string actionName = ViewContext.RouteData.GetRequiredString("action");
+            string menu_url = string.Format("/{0}/{1}", controllerName, actionName);
+            tongcuclamnghiep.m_controller.Where(a => a.status == true && a.level == 1 && a.m_controller_role.Any(b => b.status == true && b.role_id == account.Role_Id && b.controller_id == a.id)).OrderBy(a => a.order).ToList().ForEach(a =>
+            {
+                MenuTop menu = new MenuTop();
+                menu.Title = a.controllerdisplay;
+                menu.ControllerUrl = a.controllername;
+                menu.Menus = tongcuclamnghiep.m_controller.Where(b => b.status == true && b.level == 2 && b.controller_id == a.id && b.m_controller_role.Any(c => c.status == true && c.role_id == account.Role_Id && c.controller_id == b.id)).OrderBy(b => b.order).ToList().Select(b => new MenuBottom() { Title = b.controllerdisplay, Url = b.controllerurl }).ToList();
+                menus.Add(menu);
+            });
+        }
+        <li class="@if (controllerName=="Home") { @Html.Raw("active") } "><a href="/"><i class="lnr lnr-home"></i> <span>Trang chủ</span></a></li>
+
+
+        @foreach (var item in menus)
+        {
+            <li class="@if(item.ControllerUrl.Equals(controllerName)) { @Html.Raw("active") } ">
+                <a class="has-arrow"><i class="lnr lnr-bookmark"></i> <span>@item.Title</span></a>
+                @if (item.Menus.Count() > 0)
+                {
+                    <ul>
+                        @foreach (var item2 in item.Menus)
+                        {
+                            <li class="@if(item2.Url.Contains(actionName)) { @Html.Raw("active") } "><a href="@item2.Url">@item2.Title</a></li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+</nav>

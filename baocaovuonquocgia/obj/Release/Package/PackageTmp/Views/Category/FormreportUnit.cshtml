@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "FormreportUnit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using baocaovuonquocgia.App_Data
+@{
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var _ReportTable = tongcuclamnghiep.m_reporttable.Where(a => a.status == true).OrderBy(a => a.order).Select(a => new { a.id, a.title, a.autorow });
+}
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Danh sách mẫu báo cáo</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="facet-list ui-sortable" id="DanhSachBaoCao">
+                @foreach (var item in _ReportTable)
+                {
+                    @Html.Raw("<li class='facet ui-sortable-handle' data-id=" + (item.id) + ">" + (item.title) + " <a class='hint--top x-taibaocaomau' style='cursor: pointer; ' aria-label='Tải báo cáo mẫu'><i class='fa fa-file-excel-o'></i></a></li>")
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button type="button" class="btn btn-primary float-right" style="    background-color: #21b24bb5; border-color:#21b24bb5" id="btn_TaiBaoCaoAll">Tải toàn bộ mẫu</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            if (document.querySelectorAll('#DanhSachBaoCao li').length > 0) {
+                document.querySelectorAll('#DanhSachBaoCao li').forEach(function ($li) {
+                   
+                    $li.querySelector('.x-taibaocaomau').addEventListener('click', function () {
+                        var $this = this;
+                        ExportTableReportEmpty(parseInt($this.closest('li').dataset.id))
+                    })
+                })
+                document.getElementById('btn_TaiBaoCaoAll').addEventListener('click', function () {
+                    ExportTableReportEmpty();
+                })
+            }
+        })
+    </script>
+}

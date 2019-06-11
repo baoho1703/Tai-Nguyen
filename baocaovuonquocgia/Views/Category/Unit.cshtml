@@ -1,0 +1,349 @@
+﻿
+@{
+    ViewBag.Title = "Unit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model baocaovuonquocgia.Models.ControllerTab
+
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Danh sách đơn vị</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.Tab == 1)
+            {
+                @Html.Partial("~/Views/Category/Unit/DanhSach.cshtml")
+            }
+            @if (Model.Tab == 2)
+            {
+                @Html.Partial("~/Views/Category/Unit/ThemMoi.cshtml")
+            }
+            @if (Model.Tab == 3)
+            {
+                @Html.Partial("~/Views/Category/Unit/ChinhSua.cshtml", Model)
+            }
+            @if (Model.Tab == 4)
+            {
+                @Html.Partial("~/Views/Category/Unit/LichSu.cshtml", Model)
+            }
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var $tableDonVi;
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var Tab =@Model.Tab;
+            if (Tab == 1) {
+                $tableDonVi = $('#tableDonVi').dataTable({
+                    ajax: '/Category/GetUnitTable',
+                    processing: true,
+                    serverSide: true,
+                    width: 'auto',
+                    bSort: false,
+                    bDestroy: true,
+                    responsive: true,
+                    columns: [
+                        {
+                            data: 'id',
+                            class: 'text-center column-80',
+                        },
+                        {
+                            data: 'unitname'
+                        },
+                        {
+                            data: 'address'
+                        },
+                        {
+                            data: 'id',
+                            mRender: function (data, type, row) {
+                                var $div = document.createElement('div');
+                                var $select = document.createElement('select');
+                                $select.setAttribute('class', 'form-control');
+                                $select.innerHTML = '<option value=0>Lựa chọn</option>';
+                                if (row.account.length > 0) {
+                                    row.account.forEach(function ($account) {
+                                        var $opt = document.createElement('option');
+                                        $opt.value = $account.id;
+                                        $opt.innerHTML = $account.fullname;
+                                        if ($account.selected) {
+                                            $opt.setAttribute('selected', true);
+                                        }
+                                        $select.appendChild($opt)
+                                    });
+                                }
+                                $div.appendChild($select);
+                                return $div.innerHTML;
+                            }
+                        },
+                        {
+                            data: 'id',
+                            mRender: function (data, type, row) {
+                                var rt = '';
+                                rt = '<a class="hint--top x-chinhsua" style="cursor: pointer;" aria-label="Chỉnh sửa"><i class="lnr lnr-pencil"></i></a>';
+                                rt += '<a class="hint--top x-lichsu" style="cursor: pointer;" aria-label="Lịch sử"><i class="fa fa-tasks"></i></a>';
+                                return rt;
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0,
+                    }],
+                    "order": [[1, 'asc']],
+                    responsive: true,
+                    searching: true,
+                    bLengthChange: false,
+                    iDisplayLength: 10,
+                    drawCallback: function (oSettings) {
+
+                    },
+                    fnCreatedRow: function (row, data, index) {
+                        var page = this.api().page();
+                        var len = this.api().page.len();
+                        $('td', row).eq(0).html((page * len) + (index + 1));
+                        if ($('td', row).eq(4)[0].querySelector('.x-chinhsua')) {
+                            $('td', row).eq(4)[0].querySelector('.x-chinhsua').addEventListener('click', function () {
+                                ChuyenTab("ChuyenTabChinhSua", data.id);
+                            });
+                        }
+                        if ($('td', row).eq(4)[0].querySelector('.x-chinhsua')) {
+                            $('td', row).eq(4)[0].querySelector('.x-lichsu').addEventListener('click', function () {
+                                ChuyenTab("ChuyenTabLichSu", data.id);
+                            });
+                        }
+                        if ($('td', row).eq(3)[0].querySelector('select')) {
+                            $('td', row).eq(3)[0].querySelector('select').addEventListener('change', function () {
+                                var AccountId = this.options[this.selectedIndex].value;
+                                JqueryPostData('/Category/CapNhatNguoiQuanLy', { UnitId: data.id, AccountId : AccountId }, function (res) {
+                                    Alert(res.message, function () {
+                                        if (res.success) {
+                                            $tableDonVi.api().ajax.reload(null, false)
+                                        }
+                                    })
+                                })
+                            });
+                        }
+                    },
+                    language: {
+                        lengthMenu: "Lọc theo _MENU_",
+                        zeroRecords: "Không có dòng nào",
+                        info: "Tổng cộng _TOTAL_ dòng",
+                        emptyTable: "Không có dữ liệu nào trong bảng",
+                        infoEmpty: "Không có dòng nào",
+                        loadingRecords: "Tải dữ liệu...",
+                        processing: '<div class="nloading"></div>',
+                        search: "Tìm kiếm:",
+                        searchPlaceholder: "Tìm kiếm theo nội dung ...",
+                        paginate: {
+                            first: "Đầu",
+                            last: "Cuối",
+                            next: "Tiếp",
+                            previous: "Trước"
+                        }
+                    }
+                });
+            }
+            if (Tab == 2) {
+                var sl_account = document.getElementById('sl_account');
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    ChuyenTab('ChuyenTabThemMoi')
+                });
+                document.getElementById('btn_themmoi').addEventListener('click', function () {
+                    var rt = { bool: true };
+                    var unitname = document.querySelector('.unit-name');
+                    var unitaddress = document.querySelector('.unit-address');
+                    var unitngansachnhannuoc1 = document.querySelector('.unit-ngansachnhannuoc1');
+                    var unitngansachnhanuoc2 = document.querySelector('.unit-ngansachnhanuoc2');
+                    var unittongcanbo1 = document.querySelector('.unit-tongcanbo1');
+                    var unittongcanbo2 = document.querySelector('.unit-tongcanbo2');
+                    var unitdientich1 = document.querySelector('.unit-dientich1');
+                    var unitdientich2 = document.querySelector('.unit-dientich2');
+                    var unitngaythanhlap = document.querySelector('.unit-ngaythanhlap');
+                    var UnitVersionTextData = document.querySelector('.cmt-pro');
+                    if (rt.bool == true) {
+                        if (!(unitname.innerHTML.trim().length > 10 && unitname.innerHTML.trim().length <= 4000)) {
+                            rt = { bool: false, msg: 'Tên rừng không hợp lệ' };
+                        }
+                    }
+                    if (rt.bool == true) {
+                        var datasend = {
+                            unitname: String(unitname.innerHTML).trim(),
+                            address: String(unitaddress.innerHTML).trim(),
+                            ngansachnhannuoc1: unitngansachnhannuoc1.innerHTML.trim(),
+                            ngansachnhanuoc2: unitngansachnhanuoc2.innerHTML.trim(),
+                            tongcanbo1: unittongcanbo1.innerHTML.trim(),
+                            tongcanbo2: unittongcanbo2.innerHTML.trim(),
+                            dientich1: unitdientich1.innerHTML.trim(),
+                            dientich2: unitdientich2.innerHTML.trim(),
+                            ngaythanhlap: unitngaythanhlap.innerHTML.trim(),
+                            account_id: sl_account.options[sl_account.selectedIndex].value
+                        }
+                        JqueryPostData('/Category/ThemMoiUnit', { unitAdd: datasend, UnitVersionTextData: UnitVersionTextData.outerHTML }, function (res) {
+                            Alert(res.message, function () {
+                                if (res.success) {
+                                    //clearForm(document.getElementById('form_ThemmoiUnit'))
+                                    ChuyenTab('ChuyenTabThemMoi')
+                                }
+                            })
+                        })
+                    }
+                    else {
+                        Alert(rt.msg, function () {
+
+                        })
+                    }
+                })
+                InitTable();
+            }
+            if (Tab == 3) {
+                var IdChinhSua =@Model.IdChinhSua;
+                var cbStatus = document.getElementById('cbStatus');
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    ChuyenTab('ChuyenTabChinhSua', IdChinhSua)
+                });
+                document.getElementById('btn_capnhat').addEventListener('click', function () {
+                    var rt = { bool: true };
+                    var unitname = document.querySelector('.unit-name');
+                    var unitaddress = document.querySelector('.unit-address');
+                    var unitngansachnhannuoc1 = document.querySelector('.unit-ngansachnhannuoc1');
+                    var unitngansachnhanuoc2 = document.querySelector('.unit-ngansachnhanuoc2');
+                    var unittongcanbo1 = document.querySelector('.unit-tongcanbo1');
+                    var unittongcanbo2 = document.querySelector('.unit-tongcanbo2');
+                    var unitdientich1 = document.querySelector('.unit-dientich1');
+                    var unitdientich2 = document.querySelector('.unit-dientich2');
+                    var unitngaythanhlap = document.querySelector('.unit-ngaythanhlap');
+                    var UnitVersionTextData = document.querySelector('.cmt-pro');
+                    if (rt.bool == true) {
+                        if (!(unitname.innerHTML.trim().length > 10 && unitname.innerHTML.trim().length <= 4000)) {
+                            rt = { bool: false, msg: 'Tên rừng không hợp lệ' };
+                        }
+                    }
+                    if (rt.bool == true) {
+                        var datasend = {
+                            unitname: String(unitname.innerHTML.trim()).trim(),
+                            address: String(unitaddress.innerHTML.trim()).trim(),
+                            id: IdChinhSua,
+                            ngansachnhannuoc1: unitngansachnhannuoc1.innerHTML.trim(),
+                            ngansachnhanuoc2: unitngansachnhanuoc2.innerHTML.trim(),
+                            tongcanbo1: unittongcanbo1.innerHTML.trim(),
+                            tongcanbo2: unittongcanbo2.innerHTML.trim(),
+                            dientich1: unitdientich1.innerHTML.trim(),
+                            dientich2: unitdientich2.innerHTML.trim(),
+                            ngaythanhlap: unitngaythanhlap.innerHTML.trim(),
+                            status: cbStatus.checked
+                        }
+                    JqueryPostData('/Category/ChinhSuaUnit',
+                        {
+                            unitEdit: datasend,
+                            UnitVersionTextData: UnitVersionTextData.outerHTML
+                        }, function (res) {
+                            Alert(res.message, function () {
+                                if (res.success) {
+                                    ChuyenTab('ChuyenTabChinhSua', IdChinhSua)
+                                }
+                            })
+                        })
+                    }
+                    else {
+                        Alert(rt.msg, function () {})
+                    }
+                })
+                InitTable();
+            }
+            if (Tab == 4) {
+                
+            }
+        })
+
+        function ViewLog($this) {
+            var dataText = $this.querySelector('.data-text').innerHTML;
+            var $viewlog = document.querySelector('.view-log-unit');
+            $viewlog.innerHTML = dataText;
+        }
+
+        function ChuyenTab(nameForm, IdChinhSua) {
+            var $form = document.createElement('form');
+            var $inputTab = document.createElement('input');
+            $inputTab.type = 'hidden';
+            $inputTab.name = 'tab';
+            switch (nameForm) {
+                case 'ChuyenTabThemMoi':
+                    $inputTab.value = 2;
+                    break;
+                case 'ChuyenTabDanhSach':
+                    $inputTab.value = 1;
+                    break;
+                case 'ChuyenTabChinhSua':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 3;
+                    break;
+                case 'ChuyenTabLichSu':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 4;
+                    break;
+            }
+
+            $form.action = '/category/unit';
+            $form.method = 'POST';
+            $form.appendChild($inputTab);
+            document.body.appendChild($form);
+            $form.submit();
+        }
+
+
+        function InitTable() {
+            var $tablePro = document.querySelector('.cmt-pro');
+            Array.from($tablePro.querySelectorAll('.edit-box-pro')).forEach(function ($edit) {
+                
+                $edit.closest('td').addEventListener('dblclick', function () {
+                    var $this = this;
+                    var $display = $this.querySelector('.display-pro');
+                    if ($this.querySelectorAll('.edit-box-pro-name').length > 0) {
+                        $display = $this.querySelector('.data-dynamic');
+                    }
+                    var $input = $this.querySelector('.edit-box-pro input');
+                    $input.value = $display.innerHTML;
+                    $this.classList.add('edited');
+                    $input.focus();
+                });
+                $edit.querySelector('input').addEventListener('blur', function () {
+                    var $this = this;
+                    var $td = $this.closest('td');
+                    var $display = $td.querySelector('.display-pro');
+                    var $dispayname;
+                    if ($td.querySelectorAll('.edit-box-pro-name').length > 0) {
+                        $display = $td.querySelector('.data-dynamic');
+                        $display.innerHTML = $this.value;
+                        $dispayname = $td.querySelector('.display-data-name');
+                        var $displaystatic = $td.querySelector('.data-static');
+                        $dispayname.innerHTML = $displaystatic.innerHTML + ' '+ $this.value;
+                    }
+                    else {
+                        $display.innerHTML = $this.value;
+                    }
+                    
+                    $td.classList.remove('edited');
+                })
+                $edit.querySelector('input').onkeypress = function ($e) {
+                    if ($e.keyCode == 13) {
+                        this.blur();
+                    }
+                    return true;
+                }
+            });
+        }
+
+    </script>
+}

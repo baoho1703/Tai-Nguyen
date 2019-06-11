@@ -1,0 +1,71 @@
+﻿@using baocaovuonquocgia.Models
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Tổng cục lâm nghiệp</title>
+    @Styles.Render("~/bundlescss/css")
+    @Scripts.Render("~/bundles/jqueryHeader")
+</head>
+<body>
+    <div id="wrapper">
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid" style="padding:0; height:90px;">
+                <div class="navbar-btn">
+                    <button type="button" class="btn-toggle-offcanvas"><i class="lnr lnr-menu"></i></button>
+                </div>
+                <div class="banner">
+                    <img src="~/Content/img/banner_nl1.jpg" style="width: 100%;    height: 90px;" />
+                </div>
+                <!-- logo -->
+                @*<div class="navbar-brand">
+                    <a href="/" class="logo-text">Công đoàn giáo dục việt nam</a>
+                </div>*@
+                <!-- end logo -->
+            </div>
+        </nav>
+        <!-- END NAVBAR -->
+        <!-- LEFT SIDEBAR -->
+        <div id="left-sidebar" class="sidebar">
+            <button type="button" class="btn btn-xs btn-link btn-toggle-fullwidth">
+                <span class="sr-only">Toggle Fullwidth</span>
+                <i class="fa fa-angle-left"></i>
+            </button>
+            <div class="sidebar-scroll">
+                <div class="user-account">
+                    <img src="~/Content/img/logo1_150x150.png" class="img-responsive img-circle user-photo" alt="User Profile Picture">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle user-name" data-toggle="dropdown">Xin chào, <strong style="color: #21b24b;">@(((AccountCookie)Session["AccountCookie"]).FullName)</strong> <i class="fa fa-caret-down"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-right account">
+                            <li><a href="/Home/ThongTinCaNhan">Thông tin cá nhân</a></li>
+                            <li><a href="#">...........................</a></li>
+                            <li><a href="#">...........................</a></li>
+                            <li class="divider"></li>
+                            <li>@Html.ActionLink("Đăng xuất", "Logout", "Login")</li>
+                        </ul>
+                    </div>
+                </div>
+                @Html.Partial("~/Views/Home/Menu.cshtml")
+            </div>
+        </div>
+        <!-- END LEFT SIDEBAR -->
+        <!-- MAIN CONTENT -->
+        <div id="main-content">
+
+            @RenderBody()
+        </div>
+        <!-- END MAIN CONTENT -->
+        <div class="clearfix"></div>
+        <footer>
+            <p class="copyright">&copy; 2018 <a href="/" target="_blank"> QTW</a>. All Rights Reserved.</p>
+        </footer>
+    </div>
+    <!-- END WRAPPER -->
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,274 @@
+﻿
+@{
+    ViewBag.Title = "Precious";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model baocaovuonquocgia.Models.ControllerTab
+
+<div class="container-fluid">
+    <div class="section-heading">
+        <h1 class="page-title">Danh sách quý</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.Tab == 1)
+            {
+                @Html.Partial("~/Views/Manager/Precious/DanhSach.cshtml")
+            }
+            @if (Model.Tab == 2)
+            {
+                @Html.Partial("~/Views/Manager/Precious/ThemMoi.cshtml")
+            }
+            @if (Model.Tab == 3)
+            {
+                @Html.Partial("~/Views/Manager/Precious/ChinhSua.cshtml",Model)
+            }
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var $tablePrecious;
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var Tab =@Model.Tab;
+            if (Tab == 1) {
+                $tablePrecious = $('#tablePrecious').dataTable({
+                    ajax: '/manager/GetPreciousTable',
+                    processing: true,
+                    serverSide: true,
+                    width: 'auto',
+                    bSort: false,
+                    bDestroy: true,
+                    responsive: true,
+                    columns: [
+                        {
+                            data: 'id',
+                            class: 'text-center column-80',
+                        },
+                        {
+                            data: 'precious_name'
+                        },
+                        {
+                            data: 'startdate'
+                        },
+                        {
+                            data: 'enddate'
+                        },
+                        {
+                            data: 'completedate'
+                        },
+                        {
+                            data: 'completedate',
+                            mRender: function (data, type, row) {
+                                var rt = '';
+                                if (row.status == false) {
+                                    rt = '<a class="hint--top x-chinhsua" style="cursor: pointer;" aria-label="Chỉnh sửa"><i class="lnr lnr-pencil"></i></a>';
+                                }
+                                
+                                return rt;
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0,
+                    }],
+                    "order": [[1, 'asc']],
+                    responsive: true,
+                    searching: true,
+                    bLengthChange: false,
+                    iDisplayLength: 10,
+                    drawCallback: function (oSettings) {
+
+                    },
+                    fnCreatedRow: function (row, data, index) {
+                        var page = this.api().page();
+                        var len = this.api().page.len();
+                        $('td', row).eq(0).html((page * len) + (index + 1));
+                        if ($('td', row).eq(5)[0].querySelector('.x-chinhsua')) {
+                            $('td', row).eq(5)[0].querySelector('.x-chinhsua').addEventListener('click', function () {
+                                ChuyenTab("ChuyenTabChinhSua", data.id);
+                            });
+                        }
+                    },
+                    language: {
+                        lengthMenu: "Lọc theo _MENU_",
+                        zeroRecords: "Không có dòng nào",
+                        info: "Tổng cộng _TOTAL_ dòng",
+                        emptyTable: "Không có dữ liệu nào trong bảng",
+                        infoEmpty: "Không có dòng nào",
+                        loadingRecords: "Tải dữ liệu...",
+                        processing: '<div class="nloading"></div>',
+                        search: "Tìm kiếm:",
+                        searchPlaceholder: "Tìm kiếm theo nội dung ...",
+                        paginate: {
+                            first: "Đầu",
+                            last: "Cuối",
+                            next: "Tiếp",
+                            previous: "Trước"
+                        }
+                    }
+                });
+            }
+            if (Tab == 2) {
+                var txt_precious_name = document.getElementById('txt_precious_name');
+                var txt_startdate = document.getElementById('txt_startdate');
+                var txt_enddate = document.getElementById('txt_enddate');
+                var txt_completedate = document.getElementById('txt_completedate');
+                var txt_slowdate = document.getElementById('txt_slowdate');
+                var dateNow = new Date();
+                var $startdate = $('#txt_startdate').combodate({
+                    maxYear: dateNow.getFullYear() + 1,
+                    minYear: dateNow.getFullYear(),
+                    value: dateNow,
+                    firstItem: null,
+                });  
+                $('#txt_enddate').combodate({
+                    maxYear: dateNow.getFullYear() + 1,
+                    minYear: dateNow.getFullYear(),
+                    value: dateNow,
+                    firstItem: null,
+                });  
+                $('#txt_completedate').combodate({
+                    maxYear: dateNow.getFullYear() + 2,
+                    minYear: dateNow.getFullYear(),
+                    value: dateNow,
+                    firstItem: null,
+                }); 
+                $('#txt_slowdate').combodate({
+                    maxYear: dateNow.getFullYear() + 2,
+                    minYear: dateNow.getFullYear(),
+                    value: dateNow,
+                    firstItem: null,
+                }); 
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    ChuyenTab('ChuyenTabThemMoi')
+                });
+                document.getElementById('btn_themmoi').addEventListener('click', function () {
+                    var $question = confirm('Nếu thêm mới sẽ cập nhật các quý khác về hoàn thành');
+                    if ($question == true) {
+                        var rt = { bool: true };
+                        if (rt.bool == true) {
+                            rt = ElementValidation(txt_precious_name, [{ name: 'rangelength', requirement: [5, 100] }]);
+                        }
+                        if (rt.bool == true) {
+                            var datasend = {
+                                precious_name: String(txt_precious_name.value).trim(),
+                                enddate: $('#txt_enddate').combodate('getValue', 'YYYY-MM-DD'),
+                                startdate: $('#txt_startdate').combodate('getValue', 'YYYY-MM-DD'),
+                                completedate: $('#txt_completedate').combodate('getValue', 'YYYY-MM-DD'),
+                                slowday: $('#txt_slowdate').combodate('getValue', 'YYYY-MM-DD'),
+                                //moment('26-11-2018', "DD-MM-YYYY").format("YYYY-MM-DD")
+                            }
+                            JqueryPostData('/Manager/ThemMoiQuy', { preciousAdd: datasend }, function (res) {
+                                Alert(res.message, function () {
+                                    if (res.success) {
+                                        ChuyenTab('ChuyenTabThemMoi')
+                                    }
+                                })
+                            })
+                        }
+                        else {
+                            Alert(rt.msg, function () {
+
+                            })
+                        }
+                    }
+                })
+            }
+            if (Tab == 3) {
+                var IdChinhSua=@Model.IdChinhSua;
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    ChuyenTab('ChuyenTabChinhSua', IdChinhSua)
+                });
+                var txt_precious_name = document.getElementById('txt_precious_name');
+                var txt_startdate = document.getElementById('txt_startdate');
+                var txt_enddate = document.getElementById('txt_enddate');
+                var txt_completedate = document.getElementById('txt_completedate');
+                var txt_slowdate = document.getElementById('txt_slowdate');
+                var dateNow = new Date();
+                var $startdate = $('#txt_startdate').combodate({
+                    maxYear: dateNow.getFullYear() + 1,
+                    minYear: dateNow.getFullYear(),
+                    firstItem: null,
+                });
+                $('#txt_enddate').combodate({
+                    maxYear: dateNow.getFullYear() + 1,
+                    minYear: dateNow.getFullYear(),
+                    firstItem: null,
+                });
+                $('#txt_completedate').combodate({
+                    maxYear: dateNow.getFullYear() + 2,
+                    minYear: dateNow.getFullYear(),
+                    firstItem: null,
+                }); 
+                $('#txt_slowdate').combodate({
+                    maxYear: dateNow.getFullYear() + 2,
+                    minYear: dateNow.getFullYear(),
+                    firstItem: null,
+                }); 
+                document.getElementById('btn_capnhat').addEventListener('click', function () {
+
+                    var rt = { bool: true };
+                    if (rt.bool == true) {
+                        rt = ElementValidation(txt_precious_name, [{ name: 'rangelength', requirement: [5, 100] }]);
+                    }
+                    if (rt.bool == true) {
+                        var datasend = {
+                            precious_name: String(txt_precious_name.value).trim(),
+                            enddate: $('#txt_enddate').combodate('getValue', 'YYYY-MM-DD'),
+                            startdate: $('#txt_startdate').combodate('getValue', 'YYYY-MM-DD'),
+                            completedate: $('#txt_completedate').combodate('getValue', 'YYYY-MM-DD'),
+                            slowday: $('#txt_slowdate').combodate('getValue', 'YYYY-MM-DD'),
+                            //moment('26-11-2018', "DD-MM-YYYY").format("YYYY-MM-DD")
+                            id: IdChinhSua
+                        }
+                        JqueryPostData('/Manager/ChinhSuaQuy', { preciousEdit: datasend }, function (res) {
+                            Alert(res.message, function () {
+                                if (res.success) {
+                                    ChuyenTab('ChuyenTabChinhSua', IdChinhSua)
+                                }
+                            })
+                        })
+                    }
+                    else {
+                        Alert(rt.msg, function () {
+
+                        })
+                    }
+
+                })
+            }
+        })
+        function ChuyenTab(nameForm, IdChinhSua) {
+            var $form = document.createElement('form');
+            var $inputTab = document.createElement('input');
+            $inputTab.type = 'hidden';
+            $inputTab.name = 'tab';
+            switch (nameForm) {
+                case 'ChuyenTabThemMoi':
+                    $inputTab.value = 2;
+                    break;
+                case 'ChuyenTabDanhSach':
+                    $inputTab.value = 1;
+                    break;
+                case 'ChuyenTabChinhSua':
+                    var $inputIdChinhSua = document.createElement('input');
+                    $inputIdChinhSua.type = 'hidden';
+                    $inputIdChinhSua.name = 'IdChinhSua';
+                    $inputIdChinhSua.value = IdChinhSua;
+                    $form.appendChild($inputIdChinhSua);
+                    $inputTab.value = 3;
+                    break;
+            }
+            
+            $form.action = '/manager/precious';
+            $form.method = 'POST';
+            $form.appendChild($inputTab);
+            document.body.appendChild($form);
+            $form.submit();
+        }
+    </script>
+}

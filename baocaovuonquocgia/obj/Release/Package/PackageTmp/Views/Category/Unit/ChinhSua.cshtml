@@ -1,0 +1,320 @@
+﻿@using baocaovuonquocgia.Models
+@using baocaovuonquocgia.App_Data
+@model baocaovuonquocgia.Models.ControllerTab
+@{
+        tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+        var _DonVi = tongcuclamnghiep.m_unit.Where(a => a.id == Model.IdChinhSua).FirstOrDefault();
+
+        if (_DonVi != null)
+        {
+            var UnitVersion = tongcuclamnghiep.m_unitversion.Where(a => a.unit_id == _DonVi.id && a.status == true).FirstOrDefault();
+
+        <ul class="nav nav-tabs nav-tabs-colored">
+            <li><a onclick="ChuyenTab('ChuyenTabDanhSach')">Danh sách</a></li>
+            <li><a onclick="ChuyenTab('ChuyenTabThemMoi')">Thêm mới</a></li>
+            <li class="active"><a>Chỉnh sửa</a></li>
+        </ul>
+        <div class="tab-content tab-content-colored">
+            <div class="tab-pane fade in active">
+                <div class="panel-content">
+                    <form novalidate id="form_CapNhatDonVi">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <fieldset class="fld_pro">
+                                    <legend>Thông tin đơn vị</legend>
+                                    @{ 
+                                        if(UnitVersion!=null && UnitVersion.datatext != null)
+                                        {
+                                            @Html.Raw(UnitVersion.datatext);
+                                        }
+                                        else
+                                        {
+                                    <table class="cmt-pro">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4"><div class="cnt-row-1">Thông tin chung</div></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <div class="display-pro">
+                                                        <div class="data-static" style="display:none">Tên, địa chỉ (email, điện thoại liên lạc) người thực hiện báo cáo:</div>
+                                                        <div class="data-dynamic" style="display:none"></div>
+                                                        <div class="display-data-name">Tên, địa chỉ (email, điện thoại liên lạc) người thực hiện báo cáo:</div>
+                                                    </div>
+                                                    <div class="edit-box-pro edit-box-pro-name">
+                                                        <input type="text" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4"><div class="cnt-row-3-1">Ngày báo cáo:</div></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <table>
+                                                        <colgroup style="width:20%"></colgroup>
+                                                        <colgroup style="width:30%"></colgroup>
+                                                        <colgroup style="width:30%"></colgroup>
+                                                        <colgroup style="width:20%"></colgroup>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Tên khu rừng
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="2">
+                                                                    <div class="display-pro unit-name">@_DonVi.unitname</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Ghi chú
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Loại/ hạng
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="2">
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Vị trí
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="2">
+                                                                    <div class="display-pro unit-address">@_DonVi.address</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Ngày thành lập:
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="2">
+                                                                    <div class="display-pro unit-ngaythanhlap">@_DonVi.ngaythanhlap</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Cơ quan, đơn vị quản lý:
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="2">
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Diện tích khu rừng:
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    Tổng :
+                                                                    <div class="display-pro unit-dientich1">@_DonVi.dientich1</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="number" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    Phân khu :
+                                                                    <div class="display-pro unit-dientich2">@_DonVi.dientich2</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="number" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Tổng số cán bộ
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    Trong biên chế :
+                                                                    <div class="display-pro unit-tongcanbo1">@_DonVi.tongcanbo1</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="number" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    Hợp đồng
+                                                                    <div class="display-pro unit-tongcanbo2">@_DonVi.tongcanbo2</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="number" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Ngân sách Nhà nước
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    Bảo vệ rừng; Phục hồi rừng :
+                                                                    <div class="display-pro unit-ngansachnhannuoc1">@_DonVi.ngansachnhannuoc1</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="number" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    Xây dựng cơ sở hạ tầng; trang thiết bị :
+                                                                    <div class="display-pro unit-ngansachnhanuoc2">@_DonVi.ngansachnhanuoc2</div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="number" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Nhiệm vụ chính trong năm
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="data-static">
+                                                                        Các chương trình, dự án, đề án khác liên quan
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="2">
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="display-pro"></div>
+                                                                    <div class="edit-box-pro">
+                                                                        <input type="text" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                        }
+                                    }
+                                    
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Trạng thái</label>
+                                    <br>
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" id="cbStatus" name="cbStatus" @if (_DonVi.status==true) { @Html.Raw("checked") } >
+
+                                     <span>Hiển thị</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary float-right" id="btn_capnhat">Chỉnh sửa</button>
+                                    <button type="button" class="btn btn-primary float-right" id="btn_reset">Làm lại</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}

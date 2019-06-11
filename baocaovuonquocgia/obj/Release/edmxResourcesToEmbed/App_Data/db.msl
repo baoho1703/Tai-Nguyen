@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="tongcuclamnghiepModelStoreContainer" CdmEntityContainer="tongcuclamnghiepEntities">
+    <EntitySetMapping Name="m_account">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_account">
+        <MappingFragment StoreEntitySet="m_account">
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="role_id" ColumnName="role_id" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="gender" ColumnName="gender" />
+          <ScalarProperty Name="fullname" ColumnName="fullname" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="username" ColumnName="username" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_component">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_component">
+        <MappingFragment StoreEntitySet="m_component">
+          <ScalarProperty Name="typevalue" ColumnName="typevalue" />
+          <ScalarProperty Name="reporttable_id" ColumnName="reporttable_id" />
+          <ScalarProperty Name="header_id" ColumnName="header_id" />
+          <ScalarProperty Name="orderrow" ColumnName="orderrow" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="componentname" ColumnName="componentname" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_controller">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_controller">
+        <MappingFragment StoreEntitySet="m_controller">
+          <ScalarProperty Name="controller_id" ColumnName="controller_id" />
+          <ScalarProperty Name="controllerdisplay" ColumnName="controllerdisplay" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="level" ColumnName="level" />
+          <ScalarProperty Name="order" ColumnName="order" />
+          <ScalarProperty Name="controllerurl" ColumnName="controllerurl" />
+          <ScalarProperty Name="controllername" ColumnName="controllername" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_controller_role">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_controller_role">
+        <MappingFragment StoreEntitySet="m_controller_role">
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="role_id" ColumnName="role_id" />
+          <ScalarProperty Name="controller_id" ColumnName="controller_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_header">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_header">
+        <MappingFragment StoreEntitySet="m_header">
+          <ScalarProperty Name="is_component" ColumnName="is_component" />
+          <ScalarProperty Name="is_no" ColumnName="is_no" />
+          <ScalarProperty Name="valuetextalign" ColumnName="valuetextalign" />
+          <ScalarProperty Name="is_valueupper" ColumnName="is_valueupper" />
+          <ScalarProperty Name="is_valuebold" ColumnName="is_valuebold" />
+          <ScalarProperty Name="is_upper" ColumnName="is_upper" />
+          <ScalarProperty Name="is_bold" ColumnName="is_bold" />
+          <ScalarProperty Name="header_id" ColumnName="header_id" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="reporttable_id" ColumnName="reporttable_id" />
+          <ScalarProperty Name="order" ColumnName="order" />
+          <ScalarProperty Name="level" ColumnName="level" />
+          <ScalarProperty Name="rowspan" ColumnName="rowspan" />
+          <ScalarProperty Name="colspan" ColumnName="colspan" />
+          <ScalarProperty Name="headername" ColumnName="headername" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_precious">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_precious">
+        <MappingFragment StoreEntitySet="m_precious">
+          <ScalarProperty Name="slowday" ColumnName="slowday" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="account_id" ColumnName="account_id" />
+          <ScalarProperty Name="completedate" ColumnName="completedate" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="enddate" ColumnName="enddate" />
+          <ScalarProperty Name="startdate" ColumnName="startdate" />
+          <ScalarProperty Name="precious_name" ColumnName="precious_name" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_reporttable">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_reporttable">
+        <MappingFragment StoreEntitySet="m_reporttable">
+          <ScalarProperty Name="autorow" ColumnName="autorow" />
+          <ScalarProperty Name="showtotal" ColumnName="showtotal" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="order" ColumnName="order" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_role">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_role">
+        <MappingFragment StoreEntitySet="m_role">
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="rolename" ColumnName="rolename" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_unit">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_unit">
+        <MappingFragment StoreEntitySet="m_unit">
+          <ScalarProperty Name="ngaythanhlap" ColumnName="ngaythanhlap" />
+          <ScalarProperty Name="dientich2" ColumnName="dientich2" />
+          <ScalarProperty Name="dientich1" ColumnName="dientich1" />
+          <ScalarProperty Name="tongcanbo2" ColumnName="tongcanbo2" />
+          <ScalarProperty Name="tongcanbo1" ColumnName="tongcanbo1" />
+          <ScalarProperty Name="ngansachnhanuoc2" ColumnName="ngansachnhanuoc2" />
+          <ScalarProperty Name="ngansachnhannuoc1" ColumnName="ngansachnhannuoc1" />
+          <ScalarProperty Name="account_id" ColumnName="account_id" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="address" ColumnName="address" />
+          <ScalarProperty Name="unitname" ColumnName="unitname" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_unit_datareport">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_unit_datareport">
+        <MappingFragment StoreEntitySet="m_unit_datareport">
+          <ScalarProperty Name="editlasttime" ColumnName="editlasttime" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="data_text" ColumnName="data_text" />
+          <ScalarProperty Name="component_id" ColumnName="component_id" />
+          <ScalarProperty Name="unit_precious_id" ColumnName="unit_precious_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_unit_datereport_autorows">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_unit_datereport_autorows">
+        <MappingFragment StoreEntitySet="m_unit_datereport_autorows">
+          <ScalarProperty Name="reporttable_id" ColumnName="reporttable_id" />
+          <ScalarProperty Name="unit_precious_id" ColumnName="unit_precious_id" />
+          <ScalarProperty Name="editdate" ColumnName="editdate" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="header_id" ColumnName="header_id" />
+          <ScalarProperty Name="datatext" ColumnName="datatext" />
+          <ScalarProperty Name="orderrow" ColumnName="orderrow" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_unit_precious">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_unit_precious">
+        <MappingFragment StoreEntitySet="m_unit_precious">
+          <ScalarProperty Name="precious_id" ColumnName="precious_id" />
+          <ScalarProperty Name="completedate" ColumnName="completedate" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="unit_id" ColumnName="unit_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_unitversion">
+      <EntityTypeMapping TypeName="tongcuclamnghiepModel.m_unitversion">
+        <MappingFragment StoreEntitySet="m_unitversion">
+          <ScalarProperty Name="ngaythanhlap" ColumnName="ngaythanhlap" />
+          <ScalarProperty Name="dientich2" ColumnName="dientich2" />
+          <ScalarProperty Name="dientich1" ColumnName="dientich1" />
+          <ScalarProperty Name="tongcanbo2" ColumnName="tongcanbo2" />
+          <ScalarProperty Name="tongcanbo1" ColumnName="tongcanbo1" />
+          <ScalarProperty Name="ngansachnhanuoc2" ColumnName="ngansachnhanuoc2" />
+          <ScalarProperty Name="ngansachnhannuoc1" ColumnName="ngansachnhannuoc1" />
+          <ScalarProperty Name="createdate" ColumnName="createdate" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="version" ColumnName="version" />
+          <ScalarProperty Name="datatext" ColumnName="datatext" />
+          <ScalarProperty Name="unit_id" ColumnName="unit_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

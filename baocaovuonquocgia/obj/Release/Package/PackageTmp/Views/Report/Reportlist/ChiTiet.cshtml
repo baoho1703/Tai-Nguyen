@@ -1,0 +1,36 @@
+﻿@using baocaovuonquocgia.App_Data
+@using baocaovuonquocgia.Models
+@model baocaovuonquocgia.Models.ControllerTab
+@{ 
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var danhsachdonvi = tongcuclamnghiep.m_unit.Where(a => a.status == true).Select(a=>new { a.id, a.unitname }).ToList();
+}
+<ul class="nav nav-tabs nav-tabs-colored">
+    <li><a onclick="ChuyenTab('ChuyenTabDanhSach')">Danh sách</a></li>
+    <li class="active"><a>Chi Tiết</a></li>
+</ul>
+<div class="tab-content tab-content-colored">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="sl_account">Đơn vị<required> * </required></label>
+                <select class="form-control" name="sl_unit" id="sl_unit">
+                    <option value=0>Tất cả đơn vị</option>
+                    @foreach (var item in danhsachdonvi)
+                    {
+                        @Html.Raw("<option value=" + (item.id) + ">" + (item.unitname) + "</option>");
+                    }
+                </select>
+                <label class="parsley-required"></label>
+            </div>
+        </div>
+    </div>
+    <ul class="list-unstyled list-login-session" id="list-baocao"></ul>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button type="button" class="btn btn-primary float-right" id="btn_taibaocao">Tải báo cáo</button>
+            </div>
+        </div>
+    </div>
+</div>

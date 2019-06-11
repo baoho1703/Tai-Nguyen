@@ -1,0 +1,68 @@
+﻿@using baocaovuonquocgia.Models
+@using baocaovuonquocgia.App_Data
+@model baocaovuonquocgia.Models.ControllerTab
+@{
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    var precious = tongcuclamnghiep.m_precious.Where(a => a.id == Model.IdChinhSua && a.status == false).FirstOrDefault();
+    if (precious != null)
+    {
+        <ul class="nav nav-tabs nav-tabs-colored">
+            <li><a onclick="ChuyenTab('ChuyenTabDanhSach')">Danh sách</a></li>
+            <li><a onclick="ChuyenTab('ChuyenTabThemMoi')">Thêm mới</a></li>
+            <li class="active"><a>Chỉnh sửa</a></li>
+        </ul>
+        <div class="tab-content tab-content-colored">
+            <div class="tab-pane fade in active">
+                <div class="panel-content">
+                    <form novalidate id="form_CapNhatQuy">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txt_precious_name">Tên (Ex: Quý I - 20....) <required> * </required></label>
+                                    <input type="text" id="txt_precious_name" name="precious_name" class="form-control" onkeyup="ElementValidation(this, [{ name: 'rangelength', requirement: [5,100] }])" value="@precious.precious_name">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txt_completedate">Hạn hoàn thành <required> * </required></label>
+                                    <input type="text" id="txt_completedate" name="completedate" class="form-control" data-format="DD-MM-YYYY" data-template="DD - MM - YYYY" value="@precious.completedate.Value.ToString("dd-MM-yyyy")">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div>
+                                    <label for="startdate">Ngày báo cáo <required> * </required></label><br />
+                                    <div class="daterange">
+                                        <input type="text" id="txt_startdate" name="startdate" class="form-control" data-format="DD-MM-YYYY" data-template="DD - MM - YYYY" value="@precious.startdate.Value.ToString("dd-MM-yyyy")"> đến
+                                        <input type="text" id="txt_enddate" name="enddate" class="form-control" data-format="DD-MM-YYYY" data-template="DD - MM - YYYY" value="@precious.enddate.Value.ToString("dd-MM-yyyy")">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txt_slowdate">Ngày báo chậm <required> * </required></label>
+                                    <input type="text" id="txt_slowdate" name="slowdate" class="form-control" data-format="DD-MM-YYYY" data-template="DD - MM - YYYY" value="@precious.slowday.Value.ToString("dd-MM-yyyy")">
+                                    <label class="parsley-required"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary float-right" id="btn_capnhat">Chỉnh sửa</button>
+                                    <button type="button" class="btn btn-primary float-right" id="btn_reset">Làm lại</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}

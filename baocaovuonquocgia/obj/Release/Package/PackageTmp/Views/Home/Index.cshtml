@@ -1,0 +1,727 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style type="text/css">
+    .alert.warning {
+        background-color: #ff9800;
+    }
+
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+        opacity: 0.83;
+        transition: opacity 0.6s;
+        margin-bottom: 15px;
+    }
+
+    header.live-tonghoptiendocacquy-header {
+        padding-left: 25px;
+        text-transform: uppercase;
+    }
+
+    .cart-chart {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: .25rem;
+        border: 0;
+        border-radius: 0px;
+        margin-bottom: 30px;
+        -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.03);
+        box-shadow: 0 2px 3px rgba(0,0,0,0.03);
+        -webkit-transition: .5s;
+        transition: .5s;
+    }
+
+    .ct-chart {
+        position: relative;
+    }
+
+    .ct-legend {
+        position: relative;
+        z-index: 10;
+        list-style: none;
+        text-align: center;
+    }
+
+        .ct-legend li {
+            position: relative;
+            padding-left: 23px;
+            margin-right: 10px;
+            margin-bottom: 3px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+            .ct-legend li:before {
+                width: 12px;
+                height: 12px;
+                position: absolute;
+                left: 0;
+                content: '';
+                border: 3px solid transparent;
+                border-radius: 2px;
+            }
+
+            .ct-legend li.inactive:before {
+                background: transparent;
+            }
+
+        .ct-legend.ct-legend-inside {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+            .ct-legend.ct-legend-inside li {
+                display: block;
+                margin: 0;
+            }
+
+
+        .ct-legend .ct-series-0:before {
+            background-color: #21b24b;
+            border-color: #21b24b;
+        }
+
+        .ct-legend .ct-series-1:before {
+            background-color: yellow;
+            border-color: yellow;
+        }
+
+        .ct-legend .ct-series-2:before {
+            background-color: red;
+            border-color: red;
+            
+        }
+
+        .ct-legend .ct-series-4:before {
+            background-color: #453d3f;
+            border-color: #453d3f;
+        }
+
+    .ct-series.ct-series-a .ct-bar {
+        stroke: #21b24b !important;
+    }
+
+    .ct-series.ct-series-b .ct-bar {
+        stroke: yellow !important;
+        
+    }
+
+    .ct-series.ct-series-c .ct-bar {
+        stroke: red !important;
+    }
+
+    .ct-chart-line-multipleseries .ct-legend .ct-series-0:before {
+        background-color: #d70206;
+        border-color: #d70206;
+    }
+
+    .ct-chart-line-multipleseries .ct-legend .ct-series-1:before {
+        background-color: #f4c63d;
+        border-color: #f4c63d;
+    }
+
+    .ct-chart-line-multipleseries .ct-legend li.inactive:before {
+        background: transparent;
+    }
+</style>
+<link href="~/Scripts/chartist/chartist.css" rel="stylesheet" />
+@*<link href="~/Scripts/chartist/chartistcm.css" rel="stylesheet" />*@
+<link href="~/Scripts/chartist/chartist-plugin-tooltip.css" rel="stylesheet" />
+<script src="~/Scripts/chartist/chartist.js"></script>
+<script src="~/Scripts/chartist/chartist-plugin-tooltip.min.js"></script>
+<script src="~/Scripts/chartist/chartist-plugin-legend.js"></script>
+
+@using baocaovuonquocgia.App_Data
+@using baocaovuonquocgia.Models
+@using Newtonsoft.Json
+@using System.Web.Script.Serialization
+@{
+    m_unit _Unit = new m_unit();
+    bool CheckView = false;
+    tongcuclamnghiepEntities tongcuclamnghiep = new tongcuclamnghiepEntities();
+    AccountCookie accountCookie = (AccountCookie)Session["AccountCookie"];
+    if (accountCookie.Role_Id == 1)
+    {
+        <div class="container-fluid">
+            <div class="live-tonghoptiendocacquy-bound cart-chart" style=" overflow: hidden; width:calc(100% - 50px)">
+
+                <header class="live-tonghoptiendocacquy-header"><h4>Tổng hợp tiến độ báo cáo các quý</h4></header>
+                <div id="tonghoptiendocacquy" class="br-chartist ct-chart ct-chart-line" style="   "></div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-11 float-left">
+                    <div class="form-group">
+                        <div class="btn-group float-right" id="btn_taidungtiendo" style="margin:5px">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Đúng tiến độ<span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-header save-excel">Tải excel</li>
+                            </ul>
+                        </div>
+                        <div class="btn-group float-right" id="btn_taichamtiendo" style="margin:5px">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Chậm tiến độ<span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-header save-excel">Tải excel</li>
+                            </ul>
+                        </div>
+                        <div class="btn-group float-right" id="btn_taikhongbaocao" style="margin:5px">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Không báo cáo<span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-header save-excel">Tải excel</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function (event) {
+
+
+
+
+                JqueryPostData('/Home/GetTienDo', {}, function (res) {
+                    document.getElementById('btn_taidungtiendo').querySelector('.save-excel').addEventListener('click', function () {
+
+                        CreateBaoCaoTienDo(res, 1);
+                    })
+                    document.getElementById('btn_taichamtiendo').querySelector('.save-excel').addEventListener('click', function () {
+
+                        CreateBaoCaoTienDo(res, 2);
+                    })
+                    document.getElementById('btn_taikhongbaocao').querySelector('.save-excel').addEventListener('click', function () {
+
+                        CreateBaoCaoTienDo(res, 3);
+                    })
+                    document.getElementById('tonghoptiendocacquy').setAttribute('style', 'height:' + ((res.labels.length * 180) + 50) + 'px')
+                    new Chartist.Bar('#tonghoptiendocacquy', {
+                        labels: res.labels,
+                        series: res.series
+                    }, {
+                            horizontalBars: true,
+                            high: res.totalUnit,
+                            height: ((res.labels.length * 180)) + 'px',
+
+                            axisX: {
+                                // On the x-axis start means top and end means bottom
+                                position: 'end'
+                            },
+                            axisY: {
+                                // On the y-axis start means left and end means right
+                                position: 'start',
+                                offset: 150
+                            },
+                            plugins: [
+                                Chartist.plugins.tooltip({
+                                    appendToBody: true
+                                }),
+                                Chartist.plugins.legend({
+                                    legendNames: ['Đúng tiến độ', 'Chậm tiến độ', 'Không báo cáo'],
+                                })
+                            ]
+                        });
+                })
+            })
+
+
+        </script>
+    }
+    if (accountCookie.Role_Id == 2)
+    {
+        _Unit = tongcuclamnghiep.m_unit.Where(a => a.status == true && a.account_id == accountCookie.Id).FirstOrDefault();
+        if (_Unit != null)
+        {
+            bool HienCanhBao = false;
+            var BC = tongcuclamnghiep.m_precious.Where(a => a.status == false).FirstOrDefault();
+            if (BC != null)
+            {
+                if (BC.slowday <= DateTime.Now && DateTime.Now <= BC.completedate)
+                {
+                    var _UnitBC = tongcuclamnghiep.m_unit_precious.Where(a => a.unit_id == _Unit.id && a.precious_id == BC.id).FirstOrDefault();
+                    if (_UnitBC != null)
+                    {
+                        if (_UnitBC.completedate == null)
+                        {
+                            HienCanhBao = true;
+                        }
+                    }
+                    else
+                    {
+                        HienCanhBao = true;
+                    }
+                }
+            }
+
+            if (HienCanhBao)
+            {
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="alert warning">
+                                <strong>Cảnh báo!</strong> Tiến độ báo cáo kỳ mới nhất đơn vị chưa hoàn thành
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            var BaoCaoHienTai = tongcuclamnghiep.m_precious.Where(a => a.status == false && a.enddate <= DateTime.Now && a.completedate >= DateTime.Now).FirstOrDefault();
+            if (BaoCaoHienTai != null)
+            {
+                if (!tongcuclamnghiep.m_unit_precious.Any(a => a.unit_id == _Unit.id && a.precious_id == BaoCaoHienTai.id && a.completedate != null))
+                {
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert warning">
+                                    <strong>Thông báo!</strong> Yêu cầu báo cáo từ ngày @BaoCaoHienTai.enddate.Value.AddDays(1).ToString("dd-MM-yyyy") đến ngày @BaoCaoHienTai.completedate.Value.AddDays(1).ToString("dd-MM-yyyy"), Còn @((BaoCaoHienTai.completedate.Value - DateTime.Now).Days) ngày nữa.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            var Version = tongcuclamnghiep.m_unitversion.Where(a => a.status == true && a.unit_id == _Unit.id).FirstOrDefault();
+            if (Version != null)
+            {
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @Html.Raw(Version.datatext)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary float-right" id="btn_capnhat">Chỉnh sửa</button>
+                                <button type="button" class="btn btn-primary float-right" id="btn_reset">Làm lại</button>
+                                <button type="button" class="btn btn-primary float-right" style="margin:0 5px" id="btn_taithongtin">Tải thông tin</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <fieldset class="fld_pro">
+                                <legend>Thông tin đơn vị</legend>
+                                <table class="cmt-pro">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4"><div class="cnt-row-1">Thông tin chung</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="display-pro">
+                                                    <div class="data-static" style="display:none">Tên, địa chỉ (email, điện thoại liên lạc) người thực hiện báo cáo:</div>
+                                                    <div class="data-dynamic" style="display:none"></div>
+                                                    <div class="display-data-name">Tên, địa chỉ (email, điện thoại liên lạc) người thực hiện báo cáo:</div>
+                                                </div>
+                                                <div class="edit-box-pro edit-box-pro-name">
+                                                    <input type="text" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4"><div class="cnt-row-3-1">Ngày báo cáo:</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <table>
+                                                    <colgroup style="width:20%"></colgroup>
+                                                    <colgroup style="width:30%"></colgroup>
+                                                    <colgroup style="width:30%"></colgroup>
+                                                    <colgroup style="width:20%"></colgroup>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Tên khu rừng
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="display-pro unit-name">@_Unit.unitname</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Ghi chú
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Loại/ hạng
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Vị trí
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="display-pro unit-address">@_Unit.address</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Ngày thành lập:
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="display-pro unit-ngaythanhlap">@_Unit.ngaythanhlap</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Cơ quan, đơn vị quản lý:
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Diện tích khu rừng:
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                Tổng :
+                                                                <div class="display-pro unit-dientich1">@_Unit.dientich1</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="number" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                Phân khu :
+                                                                <div class="display-pro unit-dientich2">@_Unit.dientich2</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="number" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Tổng số cán bộ
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                Trong biên chế :
+                                                                <div class="display-pro unit-tongcanbo1">@_Unit.tongcanbo1</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="number" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                Hợp đồng
+                                                                <div class="display-pro unit-tongcanbo2">@_Unit.tongcanbo2</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="number" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Ngân sách Nhà nước
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                Bảo vệ rừng; Phục hồi rừng :
+                                                                <div class="display-pro unit-ngansachnhannuoc1">@_Unit.ngansachnhannuoc1</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="number" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                Xây dựng cơ sở hạ tầng; trang thiết bị :
+                                                                <div class="display-pro unit-ngansachnhanuoc2">@_Unit.ngansachnhanuoc2</div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="number" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Nhiệm vụ chính trong năm
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="data-static">
+                                                                    Các chương trình, dự án, đề án khác liên quan
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="display-pro"></div>
+                                                                <div class="edit-box-pro">
+                                                                    <input type="text" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary float-right" id="btn_capnhat">Chỉnh sửa</button>
+                                <button type="button" class="btn btn-primary float-right" id="btn_reset">Làm lại</button>
+                                <button type="button" class="btn btn-primary float-right" style="margin:0 5px" id="btn_taithongtin">Tải thông tin</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        }
+    }
+    CheckView = accountCookie.Role_Id == 2 && _Unit != null;
+    if (CheckView)
+    {
+        <script type="text/javascript">
+            var $tablePro = document.querySelector('.cmt-pro');
+            if ($tablePro) {
+                document.getElementById('btn_taithongtin').addEventListener('click', function () {
+                    JqueryPostData('/Home/GetThongTinUnit', {}, function (res) {
+
+                        var $all = document.createElement('div');
+                        $all.innerHTML = res.Vesion.datatext;
+                        var $data = res;
+                        $data.tendiachi = $all.querySelector('tr > td > .display-pro .data-dynamic').innerHTML;
+                        $data.loaihang = $all.querySelector('table table tbody tr:nth-child(2) td:nth-child(2) .display-pro').innerHTML;
+                        $data.loaihangghichu = $all.querySelector('table table tbody tr:nth-child(2) td:nth-child(3) .display-pro').innerHTML;
+                        $data.vitrighichu = $all.querySelector('table table tbody tr:nth-child(3) td:nth-child(3) .display-pro').innerHTML;
+                        $data.ngaythanhlapghichu = $all.querySelector('table table tbody tr:nth-child(4) td:nth-child(3) .display-pro').innerHTML;
+                        $data.cacdonviql = $all.querySelector('table table tbody tr:nth-child(5) td:nth-child(2) .display-pro').innerHTML;
+                        $data.cacdonviqlghichu = $all.querySelector('table table tbody tr:nth-child(5) td:nth-child(3) .display-pro').innerHTML;
+                        $data.nhiemvuchinh1 = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(2) .display-pro').innerHTML;
+                        $data.nhiemvuchinh2 = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(3) .display-pro').innerHTML;
+                        $data.nhiemvuchinhghichu = $all.querySelector('table table tbody tr:nth-child(9) td:nth-child(4) .display-pro').innerHTML;
+                        $data.cacchuongtrinhlq = $all.querySelector('table table tbody tr:nth-child(10) td:nth-child(2) .display-pro').innerHTML;
+                        $data.cacchuongtrinhlqghichu = $all.querySelector('table table tbody tr:nth-child(10) td:nth-child(3) .display-pro').innerHTML;
+                        $data.dautukhac = $all.querySelector('table table tbody tr:nth-child(8) td:nth-child(4) .display-pro').innerHTML;
+                        $data.dientichghichu = $all.querySelector('table table tbody tr:nth-child(6) td:nth-child(4) .display-pro').innerHTML;
+                        $data.tongcanboghichu = $all.querySelector('table table tbody tr:nth-child(7) td:nth-child(4) .display-pro').innerHTML;
+                        if (res.ngaythanhlap == null) {
+                            $data.ngaythanhlap = '';
+                        }
+                        CreateTableThongTin($data);
+                    })
+                });
+
+
+                function InitTable() {
+                    var $tablePro = document.querySelector('.cmt-pro');
+                    Array.from($tablePro.querySelectorAll('.edit-box-pro')).forEach(function ($edit) {
+
+                        $edit.closest('td').addEventListener('dblclick', function () {
+                            var $this = this;
+                            var $display = $this.querySelector('.display-pro');
+                            if ($this.querySelectorAll('.edit-box-pro-name').length > 0) {
+                                $display = $this.querySelector('.data-dynamic');
+                            }
+                            var $input = $this.querySelector('.edit-box-pro input');
+                            $input.value = $display.innerHTML;
+                            $this.classList.add('edited');
+                            $input.focus();
+                        });
+                        $edit.querySelector('input').addEventListener('blur', function () {
+                            var $this = this;
+                            var $td = $this.closest('td');
+                            var $display = $td.querySelector('.display-pro');
+                            var $dispayname;
+                            if ($td.querySelectorAll('.edit-box-pro-name').length > 0) {
+                                $display = $td.querySelector('.data-dynamic');
+                                $display.innerHTML = $this.value;
+                                $dispayname = $td.querySelector('.display-data-name');
+                                var $displaystatic = $td.querySelector('.data-static');
+                                $dispayname.innerHTML = $displaystatic.innerHTML + ' ' + $this.value;
+                            }
+                            else {
+                                $display.innerHTML = $this.value;
+                            }
+
+                            $td.classList.remove('edited');
+                        })
+                        $edit.querySelector('input').onkeypress = function ($e) {
+                            if ($e.keyCode == 13) {
+                                this.blur();
+                            }
+                            return true;
+                        }
+                    });
+                }
+                InitTable();
+                document.getElementById('btn_reset').addEventListener('click', function () {
+                    window.location = window.location;
+                });
+                document.getElementById('btn_capnhat').addEventListener('click', function () {
+                    var rt = { bool: true };
+                    var unitname = document.querySelector('.unit-name');
+                    var unitaddress = document.querySelector('.unit-address');
+                    var unitngansachnhannuoc1 = document.querySelector('.unit-ngansachnhannuoc1');
+                    var unitngansachnhanuoc2 = document.querySelector('.unit-ngansachnhanuoc2');
+                    var unittongcanbo1 = document.querySelector('.unit-tongcanbo1');
+                    var unittongcanbo2 = document.querySelector('.unit-tongcanbo2');
+                    var unitdientich1 = document.querySelector('.unit-dientich1');
+                    var unitdientich2 = document.querySelector('.unit-dientich2');
+                    var unitngaythanhlap = document.querySelector('.unit-ngaythanhlap');
+                    var UnitVersionTextData = document.querySelector('.cmt-pro');
+                    if (rt.bool == true) {
+                        if (!(unitname.innerHTML.trim().length > 10 && unitname.innerHTML.trim().length <= 4000)) {
+                            rt = { bool: false, msg: 'Tên rừng không hợp lệ' };
+                        }
+                    }
+                    if (rt.bool == true) {
+                        var datasend = {
+                            unitname: String(unitname.innerHTML.trim()).trim(),
+                            address: String(unitaddress.innerHTML.trim()).trim(),
+                            id: (@_Unit.id),
+                            ngansachnhannuoc1: unitngansachnhannuoc1.innerHTML.trim(),
+                            ngansachnhanuoc2: unitngansachnhanuoc2.innerHTML.trim(),
+                            tongcanbo1: unittongcanbo1.innerHTML.trim(),
+                            tongcanbo2: unittongcanbo2.innerHTML.trim(),
+                            dientich1: unitdientich1.innerHTML.trim(),
+                            dientich2: unitdientich2.innerHTML.trim(),
+                            ngaythanhlap: unitngaythanhlap.innerHTML.trim()
+                        }
+                        JqueryPostData('/Home/ChinhSuaUnit',
+                            {
+                                unitEdit: datasend,
+                                UnitVersionTextData: UnitVersionTextData.outerHTML
+                            }, function (res) {
+                                Alert(res.message, function () {
+                                    if (res.success) {
+                                        window.location = window.location;
+                                    }
+                                })
+                            })
+                    }
+                    else {
+                        Alert(rt.msg, function () { })
+                    }
+                })
+            }
+        </script>
+    }
+}
+@section scripts
+{
+
+}
